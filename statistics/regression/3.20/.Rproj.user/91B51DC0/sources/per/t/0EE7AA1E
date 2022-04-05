@@ -1,0 +1,32 @@
+{
+    "id": "0EE7AA1E",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1621327315354.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "expression": "Tab",
+        "caption": "Tab",
+        "totalObservations": 20,
+        "displayedObservations": 20,
+        "variables": 6,
+        "cacheKey": "980587F6",
+        "object": "Tab",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=Tab&cache_key=980587F6&max_cols=50",
+        "preview": 0
+    },
+    "folds": "",
+    "lastKnownWriteTime": 2346431389368,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1621327315354,
+    "read_only": false,
+    "read_only_alternatives": []
+}

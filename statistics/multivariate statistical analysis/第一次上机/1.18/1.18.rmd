@@ -1,0 +1,35 @@
+---
+title: '1.18'
+author: "舒文炫"
+date: "2021/3/28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Code
+
+```{r echo=TRUE}
+x=read.table("T1-9.dat")
+m1=c(rep(100,times=length(x[,2])))/x[,2]
+m2=c(rep(200,times=length(x[,3])))/x[,3]
+m3=c(rep(400,times=length(x[,4])))/x[,4]
+m4=c(rep(800,times=length(x[,5])))/(x[,5]*60)
+m5=c(rep(1500,times=length(x[,6])))/(x[,6]*60)
+m6=c(rep(3000,times=length(x[,7])))/(x[,7]*60)
+m7=c(rep(42195,times=length(x[,8])))/(x[,8]*60)
+m=cbind(m1,m2,m3,m4,m5,m6,m7)
+u=colMeans(m)
+print(u)
+sn=cov(m)*(length(m[,1])-1)/length(m[,1])
+print(sn)
+r=cor(m)
+print(r)
+```
+
+## interpret
+100m,200m,400m都属于短跑，可以从相关系数矩阵中看出他们相关系数高，且是正相关，即100m跑的好的200m，400m都不差，都是需要爆发力。
+800m，1500m，3000m，marathon都是长跑，从相关系数矩阵可以看出他们相关性也非常好，长跑需要的是持久力，持久力好这几个项目都会差不多好。
+相比之下前三项与后四项的相关系数就比较低，但也不是特别低，说明也有一定关系，这大概是综合体质方面的因素。

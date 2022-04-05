@@ -1,0 +1,206 @@
+---
+title: "pb18000029"
+author: "舒文炫"
+date: "2021/6/4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 6.20(a)
+```{r }
+x<-read.table("T6-11.DAT")
+plot(x)
+```
+outlier x1=284
+```{r }
+x<-read.table("T6-11.DAT")
+z<-read.table("T5-12.DAT")
+## delete 31
+y<-x[-31,]
+ym<-colMeans(y)
+sy=cov(y)
+zm<-colMeans(z)
+sz<-cov(z)
+n1<-44
+n2<-45
+p<-2
+spolled<-((n1-1)*sy+(n2-1)*sz)/(n1+n2-2)
+t<-t(ym-zm)%*%solve((1/n1+1/n2)*spolled)%*%(ym-zm)
+fyz<-(n1+n2-2)*p/(n1+n2-p-1)*qf(0.95,p,n1+n2-p-1)
+t
+fyz
+v<-solve(spolled)%*%(ym-zm)
+v
+## change the value
+x[31,1]<-184
+sx=cov(x)
+xm<-colMeans(x)
+n1<-45
+n2<-45
+p<-2
+spolled<-((n1-1)*sx+(n2-1)*sz)/(n1+n2-2)
+t<-t(xm-zm)%*%solve((1/n1+1/n2)*spolled)%*%(xm-zm)
+fyz<-(n1+n2-2)*p/(n1+n2-p-1)*qf(0.95,p,n1+n2-p-1)
+t
+fyz
+v<-solve(spolled)%*%(xm-zm)
+v
+```
+proportional to 
+delete 31: reject
+change the value to 184: reject
+```{r }
+library(car)
+library(plotrix)
+x<-read.table("T6-11.DAT")
+z<-read.table("T5-12.DAT")
+## delete 31
+y<-x[-31,]
+ym<-colMeans(y)
+sy=cov(y)
+zm<-colMeans(z)
+sz<-cov(z)
+n1<-44
+n2<-45
+p<-2
+m<-ym-zm
+spolled<-((n1-1)*sy+(n2-1)*sz)/(n1+n2-2)
+c<-(n1+n2-2)*p/(n1+n2-p-1)*qf(0.95,p,n1+n2-p-1)
+##draw ecllipse
+re<-eigen(spolled)
+lam=re$val
+ve=re$vec
+plot(0, 0,xlim=c(-12,0),ylim=c(-7,9),asp=1)
+draw.ellipse(m[1],m[2],sqrt(lam[2]*(1/n1+1/n2)*c),sqrt(lam[1]*(1/n1+1/n2)*c),angle=-atan(ve[1,1]/ve[2,1]),deg=FALSE)
+print("delete 31")
+for(i in c(1:2)){
+ up<-m[i]+sqrt(c)*sqrt((1/n1+1/n2)*spolled[i,i])
+ down<-m[i]-sqrt(c)*sqrt((1/n1+1/n2)*spolled[i,i])
+ cat("the simultaneous  interval is [",down,",",up,"]\n")
+}
+
+## change the value
+x[31,1]<-184
+sx=cov(x)
+xm<-colMeans(x)
+n1<-45
+n2<-45
+p<-2
+m<-xm-zm
+spolled<-((n1-1)*sx+(n2-1)*sz)/(n1+n2-2)
+c<-(n1+n2-2)*p/(n1+n2-p-1)*qf(0.95,p,n1+n2-p-1)
+re<-eigen(spolled)
+lam=re$val
+ve=re$vec
+plot(0, 0,xlim=c(-12,0),ylim=c(-7,9),asp=1)
+draw.ellipse(m[1],m[2],sqrt(lam[2]*(1/n1+1/n2)*c),sqrt(lam[1]*(1/n1+1/n2)*c),angle=-atan(ve[1,1]/ve[2,1]),deg=FALSE)
+print("change value")
+for(i in c(1:2)){
+ up<-m[i]+sqrt(c)*sqrt((1/n1+1/n2)*spolled[i,i])
+ down<-m[i]-sqrt(c)*sqrt((1/n1+1/n2)*spolled[i,i])
+ cat("the simultaneous  interval is [",down,",",up,"]\n")
+}
+
+```
+female is bigger.
+
+## 6.25
+```{r }
+x<-read.table("T11-7.DAT")
+##检验是否相等
+xd<-x[,c(1:5)]
+xd<-t(xd)
+xd<-t(xd)
+n<-c(7,11,length(xd[,1])-18)
+m<-matrix(colMeans(xd),ncol=1)
+x1<-xd[c(1:7),]
+m1<-matrix(colMeans(x1),ncol=1)
+x2<-xd[c(8:18),]
+m2<-matrix(colMeans(x2),ncol=1)
+x3<-xd[c(19:length(xd[,1])),]
+m3<-matrix(colMeans(x3),ncol=1)
+mq<-cbind(m1,m2,m3)
+b<-0
+for(i in c(1:3)){
+  b<-b+n[i]*(m-mq[,i])%*%t(m-mq[,i])
+}
+w<-0
+k<-1
+for(i in c(1:3)){
+  for(j in c(1:n[i])){
+    qwq<-xd[k,]
+    w<-w+(qwq-mq[,i])%*%t(qwq-mq[,i])
+    k<-k+1
+  }
+}
+lambda1<-det(w)/det(b+w)
+p<-5
+f<-(sum(n)-p-2)/p*(1-sqrt(lambda1))/sqrt(lambda1)
+f
+qf(0.95,2*p,2*(sum(n)-p-2))
+##
+g<-3
+up<-matrix(rep(0,3*6),nrow=3)
+dimnames(up)=list(seq(1,by=1,length=3))
+paste(c("group","1","2","3","4","5"))
+up[1,1]<-12
+for(i in c(2:6)){
+  up[1,i]<-(m1[i-1]-m2[i-1])+qt(1-0.05/p/g/(g-1),sum(n)-g)*sqrt(w[i-1,i-1]/(sum(n)-g)*(1/n[1]+1/n[2]))
+}
+up[2,1]<-13
+for(i in c(2:6)){
+  up[2,i]<-(m1[i-1]-m3[i-1])+qt(1-0.05/p/g/(g-1),sum(n)-g)*sqrt(w[i-1,i-1]/(sum(n)-g)*(1/n[1]+1/n[3]))
+}
+up[3,1]<-23
+for(i in c(2:6)){
+  up[3,i]<-(m2[i-1]-m3[i-1])+qt(1-0.05/p/g/(g-1),sum(n)-g)*sqrt(w[i-1,i-1]/(sum(n)-g)*(1/n[2]+1/n[3]))
+}
+print(up)
+
+down<-matrix(rep(0,3*6),nrow=3)
+dimnames(down)=list(seq(1,by=1,length=3))
+paste(c("group","1","2","3","4","5"))
+down[1,1]<-12
+for(i in c(2:6)){
+  down[1,i]<-(m1[i-1]-m2[i-1])-qt(1-0.05/p/g/(g-1),sum(n)-g)*sqrt(w[i-1,i-1]/(sum(n)-g)*(1/n[1]+1/n[2]))
+}
+down[2,1]<-13
+for(i in c(2:6)){
+  down[2,i]<-(m1[i-1]-m3[i-1])-qt(1-0.05/p/g/(g-1),sum(n)-g)*sqrt(w[i-1,i-1]/(sum(n)-g)*(1/n[1]+1/n[3]))
+}
+down[3,1]<-23
+for(i in c(2:6)){
+  down[3,i]<-(m2[i-1]-m3[i-1])-qt(1-0.05/p/g/(g-1),sum(n)-g)*sqrt(w[i-1,i-1]/(sum(n)-g)*(1/n[2]+1/n[3]))
+}
+print(down)
+```
+##8.10
+```{r }
+x<-read.table("T8-4.DAT")
+s<-cov(x)
+print(s)
+sei<-eigen(s)
+print(sei$values)
+print(sei$vectors)
+qwq<-sum(sei$values)
+prop<-c(0,0,0,0,0)
+for(i in c(1:5)){
+  prop[i]<-sei$values[i]/qwq
+}
+print(prop)
+##前三个
+three<-prop[1]+prop[2]+prop[3]
+print(three)
+for( i in c(1:3)){
+  up<-sei$values[i]/(1-qnorm(1-0.1/6)*sqrt(2/length(x[,1])))
+  down<-sei$values[i]/(1+qnorm(1-0.1/6)*sqrt(2/length(x[,1])))
+   cat("the  interval is [",down,",",up,"]\n")
+}
+
+```
+it can be explained well by the first two components,market component and industry component.
+
+

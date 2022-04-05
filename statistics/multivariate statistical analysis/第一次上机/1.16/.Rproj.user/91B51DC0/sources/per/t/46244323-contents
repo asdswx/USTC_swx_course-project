@@ -1,0 +1,7 @@
+x=read.table("T1-8.DAT")
+m=colMeans(x)
+sn=cov(x)*(length(x[,1])-1)/length(x[,1])
+r=cor(x)
+print(m)
+print(sn)
+print(r)

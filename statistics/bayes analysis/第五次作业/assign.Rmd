@@ -1,0 +1,170 @@
+---
+title: "第五次作业"
+documentclass: ctexart
+author: 舒文炫PB18000029
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: no
+    toc: yes
+classoption: "hyperref"
+---
+
+ 
+ 
+## 5.8题
+\textbf{解:}
+平方损失$L(p,a)=(p-a)^2$下，p的贝叶斯估计为其后验期望$E(p|x)$,我们知道$p=\frac{M}{N}$,其中，N已知，M未知，也就相当于求$E(\frac{M}{N}|x)=E(M|x)/N$
+下面我们只要求$E(M|x)$即可.\par 
+M的先验分布$p(M=k)=\frac{1}{N+1},k=0,1,...,N$
+在已知废品数时，x的分布是超几何分布
+从而后验分布为
+$$
+\begin{aligned}
+p(M=k|x)&= \frac{p(M=k)p(x|M=k)}{p(x)}\\
+&= \frac{1}{N+1}\frac{\tbinom{k}{x}\tbinom{N-k}{n-x}}{p(x)\tbinom{N}{k}}
+\end{aligned}
+$$
+其中对任意x都有
+$$
+\begin{aligned}
+p(x)\tbinom{N}{k}&=\frac{1}{N+1}\sum_{k=0}^N\tbinom{k}{x}\tbinom{N-k}{n-x}\\
+&=\frac{1}{N+1}\tbinom{N+1}{n+1}
+\end{aligned}
+$$
+从而后验分布为
+$$
+\begin{aligned}
+p(M=k|x)&= \frac{1}{N+1}\frac{\tbinom{k}{x}\tbinom{N-k}{n-x}}{\frac{1}{N+1}\tbinom{N+1}{n+1}}\\
+&=\frac{\tbinom{k}{x}\tbinom{N-k}{n-x}}{\tbinom{N+1}{n+1}}
+\end{aligned}
+$$
+那么后验期望为
+$$
+\begin{aligned}
+E(M|x)&=\sum_{k=0}^Nkp(M=k|x)\\
+&=\sum_{k=0}^Nk\frac{\tbinom{k}{x}\tbinom{N-k}{n-x}}{\tbinom{N+1}{n+1}}\\
+&=\sum_{k=0}^N(k+1-1)\frac{\tbinom{k}{x}\tbinom{N-k}{n-x}}{\tbinom{N+1}{n+1}}\\
+&=\sum_{k=0}^N(x+1)\frac{\tbinom{k+1}{x+1}\tbinom{N-k}{n-x}}{\tbinom{N+1}{n+1}}-1\\
+&=(x+1)\frac{\tbinom{N+2}{n+2}}{\tbinom{N+1}{n+1}}-1\\
+&=(x+1)\frac{N+2}{n+2}-1
+\end{aligned}
+$$
+从而p的贝叶斯估计为$\hat{p}_B=\frac{(x+1)\frac{N+2}{n+2}-1}{N}=\frac{(x+1)(N+2)}{N(n+2)}-\frac{1}{N}$
+
+
+## 5.19题
+
+### (1)
+\textbf{证明:}
+观察式子$L(\theta,d)=e^{c(\theta-d)}-c(\theta-d)-1$
+其值完全由$c(\theta-d)$的值决定，令$x=c(\theta-d)$,考虑$f(x)=e^{x}-x-1$
+$f'(x)=(e^{x}-1)$,$x<0$递减，$x>0$递增，从而$x=0$取最小值$f(0)=0$
+从而可知$L(\theta,d)\ge0$
+
+### (2)
+下面我们画图，
+区间在(-10,10),每隔0.1画一个点，对c的三种取值，绘制三条曲线
+```{r}
+thetad<-c(seq(-10,10,0.1))
+y1<-exp(0.1*thetad)-0.1*thetad-1
+y2<-exp(0.5*thetad)-0.5*thetad-1
+y3<-exp(1.2*thetad)-1.2*thetad-1
+plot(thetad,y1,col=1,type="l",xlab="theta-d",ylab="y")
+lines(thetad,y2,col=2,type="l")
+lines(thetad,y3,col=3,type="l")
+legend("topright",pch=c(15,15),legend=c("c=0.1","c=0.5","c=1.2"),col=c(1,2,3),bty="n")
+```
+
+### (3)
+设$\pi(\theta|x)$为$\theta$的后验密度，则决策函数$d=d(x)$的后验风险为
+$$
+\begin{aligned}
+R(d|x)&=E(L(\theta,d)|x)\\
+&=E(e^{c(\theta-d)}-c(\theta-d)-1|x)\\
+&=\int_{\Theta}(e^{c(\theta-d)}-c(\theta-d)-1)\pi(\theta|x)d\theta
+\end{aligned}
+$$
+贝叶斯解是使后验分布最小的决策函数，从而将上式对d求导得到
+$$
+\begin{aligned}
+\frac{\rm{d}\it{R(d|x)}}{\rm{d} \it{d}}&=\int_{\Theta}-c(e^{c(\theta-d)}-1)\pi(\theta|x)d\theta\\
+&=-c(\frac{E(e^{c\theta}|x)}{e^{cd}}-1)
+\end{aligned}
+$$
+再令上式为0，求得极值点满足$e^{cd}=E(e^{c\theta}|x)$也即$d=\frac{ln(E(e^{c\theta}|x))}{c}$
+同时我们有
+$$\frac{\rm{d^2}\it{R(d|x)}}{\rm{d} \it{d^2}}=\int_{\Theta}c^2e^{c(\theta-d)}\pi(\theta|x)d\theta \ge 0$$
+从而该极值点为极小值点，由(1),$d=\theta$,时损失函数最小，从而我们得到
+$\hat \theta_B$满足$\hat \theta_B=\frac{ln(E(e^{c\theta}|x))}{c}$
+
+### (4)
+$X_1,...,X_n$是正态总体$N(\theta,1)$的样本，$\theta$先验分布为$\pi(\theta)=1$
+从而$\theta$后验分布为$N(\bar x,\frac{1}{n})$
+那么代入上面的表达式
+$\hat \theta_B$满足$\hat \theta_B=\frac{ln(E(e^{c\theta}|x))}{c}$
+其中
+$$
+\begin{aligned}
+E(e^{c\theta}|x)&=\int_{\Theta}e^{c\theta}\frac{1}{\sqrt{2\pi/n}}e^{-\frac{(\theta-\bar x)^2}{2/n}}d\theta\\
+&=\int_{\Theta}\frac{1}{\sqrt{2\pi/n}}e^{-\frac{(\theta-\bar x-c/n)^2-\frac{c}{n}(2\bar x+\frac{c}{n})}{2/n}}d\theta\\
+&=e^{\frac{c(2\bar x+\frac{c}{n})}{2}}
+\end{aligned}
+$$
+即有
+$$
+\begin{aligned}
+\hat \theta_B&=\frac{ln e^{\frac{c(2\bar x+\frac{c}{n})}{2}}}{c}\\
+&=\bar x+\frac{c}{2n}
+\end{aligned}
+$$
+即为所求.
+
+## 5.20题
+
+### (1)
+\textbf{证明：}
+由题$X \sim N(\theta,1)$,从而$p(x|\theta)=\frac{1}{\sqrt{2\pi}}e^{-\frac{(x-\theta)^2}{2}}$,同理$p(x|a)=\frac{1}{\sqrt{2\pi}}e^{-\frac{(x-a)^2}{2}}$
+从而熵的距离
+$$
+\begin{aligned}
+L_e(\theta,a)&=E^{X|\theta}\Big[ln\frac{p(x|\theta)}{p(x|a)}\Big]\\
+&=E^{X|\theta}\Big[ln\frac{\frac{1}{\sqrt{2\pi}}e^{-\frac{(x-\theta)^2}{2}}}{\frac{1}{\sqrt{2\pi}}e^{-\frac{(x-a)^2}{2}}}\Big]\\
+&=E^{X|\theta}\Big[lne^{-(a-\theta)(2x-\theta-a)/2}\Big]\\
+&=E^{X|\theta}\Big[{-(a-\theta)(2x-\theta-a)/2}\Big]\\
+&=E^{X|\theta}\Big[(\theta-a)x\Big]+(a^2-\theta^2)/2\\
+&=\theta(\theta-a)+(a^2-\theta^2)/2\\
+&=\frac{1}{2}(\theta-a)^2
+\end{aligned}
+$$
+即得所求
+
+### (2)
+\textbf{证明：}
+密度函数与(1)相同，从而我们直接计算这个距离
+$$
+\begin{aligned}
+L_H(\theta,a)&=\frac{1}{2}E^{X|\theta}\Big\{\Big[ \sqrt{\frac{p(x|a)}{p(x|\theta)}}-1\Big]^2\Big\}\\
+&=\frac{1}{2}E^{X|\theta}\Big\{\Big[ \sqrt{\frac{\frac{1}{\sqrt{2\pi}}e^{-\frac{(x-a)^2}{2}}}{\frac{1}{\sqrt{2\pi}}e^{-\frac{(x-\theta)^2}{2}}}}-1\Big]^2\Big\}\\
+&=\frac{1}{2}E^{X|\theta}\Big\{\Big[ e^{(a-\theta)(2x-\theta-a)/4}-1\Big]^2\Big\}\\
+&=\frac{1}{2}E^{X|\theta}\Big[ e^{(a-\theta)(2x-\theta-a)/2}-2e^{(a-\theta)(2x-\theta-a)/4}+1\Big]\\
+&=\frac{1}{2}E^{X|\theta}\Big[ e^{(a-\theta)x}\Big]e^{(\theta^2-a^2)/2}-E^{X|\theta}\Big[ e^{(a-\theta)x/2}\Big]e^{(\theta^2-a^2)/4}+\frac{1}{2}
+\end{aligned}
+$$
+那么主要需要计算对c为常数的下面这个量
+$$
+\begin{aligned}
+E(e^{cx}|\theta)&=\int_{-\infty}^{+\infty}e^{cx}\frac{1}{\sqrt{2\pi}}e^{-\frac{(x-\theta)^2}{2}}dx\\
+&=\int_{-\infty}^{+\infty}\frac{1}{\sqrt{2\pi}}e^{-\frac{(x-\theta-c)^2-c(2\theta+c)}{2}}dx\\
+&=e^{\frac{c(2\theta+c)}{2}}
+\end{aligned}
+$$
+分别取$c=\theta-a$以及$c=(\theta-a)/2$代入上式可得
+$$
+\begin{aligned}
+L_H(\theta,a)&=\frac{1}{2}E^{X|\theta}\Big[ e^{(a-\theta)x}\Big]e^{(\theta^2-a^2)/2}-E^{X|\theta}\Big[ e^{(a-\theta)x/2}\Big]e^{(\theta^2-a^2)/4}+\frac{1}{2}\\
+&=\frac{1}{2}e^{(a-\theta)(\theta+a)/2}e^{(\theta^2-a^2)/2}-e^{(a-\theta)(\frac{a+3\theta}{2})/4}e^{(\theta^2-a^2)/4}+\frac{1}{2}\\
+&=1-e^{-\frac{(\theta-a)^2}{8}}
+\end{aligned}
+$$
+即得结果

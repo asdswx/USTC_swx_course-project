@@ -1,0 +1,39 @@
+---
+title: "PB18000029_舒文炫"
+author: "舒文炫"
+date: "2021/4/11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 4.28
+
+Q-Q图如下：
+
+```{r}
+x=read.table("T1-5.DAT")
+x<- as.numeric(unlist(x[,2]))
+b<-qqnorm(x)
+```
+
+
+下面我们求rQ:
+
+```{r b}
+x1<-b$x
+y1<-b$y
+r1=cor(x1,y1)
+```
+
+rQ=0.9693,n=40,对其进行正态性检验，显著水平0.05下，查表得临界值0.9726.小于临界值，从而我们拒绝正态性假设
+
+
+## 4.30
+
+### (a)
+```{r}
+
+```

@@ -1,0 +1,32 @@
+{
+    "id": "F2821A54",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1616901835820.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "expression": "sn",
+        "caption": "sn",
+        "totalObservations": 9,
+        "displayedObservations": 9,
+        "variables": 9,
+        "cacheKey": "C52B8B7C",
+        "object": "sn",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=sn&cache_key=C52B8B7C&max_cols=50",
+        "preview": 0
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1616901777,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1616901835820,
+    "read_only": false,
+    "read_only_alternatives": []
+}

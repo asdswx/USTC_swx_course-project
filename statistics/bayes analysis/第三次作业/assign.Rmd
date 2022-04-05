@@ -1,0 +1,277 @@
+---
+title: "第三次作业"
+documentclass: ctexart
+author: 舒文炫 PB18000029
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: no
+    toc: yes
+classoption: "hyperref"
+---
+
+ 
+ 
+## 2.12题
+
+### (1)
+\textbf{解:}该分布是区间$(\theta-1,\theta+1)$上的均匀分布，$\theta$是位置参数族，
+从而$\theta$的无信息先验为$\pi(\theta)\equiv1$
+
+### (2)
+\textbf{解:}该分布的密度函数为
+$$
+\begin{aligned}
+p(x|\beta)&=\frac{\beta}{\pi(x^2+\beta^2)}\\
+&=\frac{1}{\pi\beta[(\frac{x}{\beta})^2+1]}\\
+&=\beta^{-1}\varphi(\frac{x}{\beta})
+\end{aligned}
+$$
+$\beta$是刻度参数，从而无信息先验为$\pi(\beta)=\frac{1}{\beta}$
+
+### (3)
+\textbf{解:}考虑$(\mu,\sigma^2)$整体，既不是位置参数，也不是刻度参数，如果考虑两个参数独立的情况，此时无信息先验为$\pi(\mu,\sigma^2)=\frac{1}{\sigma^2}$
+
+
+### (4)
+\textbf{解:}帕累托分布$P(x_0,\alpha)$的密度函数为
+$$
+\pi(x|x_0)=\begin{cases}
+0&x<x_0\\
+\frac{\alpha x_0^{\alpha}}{x^{\alpha+1}}&x\ge x_0
+\end{cases}
+$$
+也即
+$$
+\pi(x|x_0)=\begin{cases}
+0&\frac{x}{x_0}<1\\
+\frac{\alpha}{x_0(\frac{x}{x_0})^{\alpha+1}}&\frac{x}{x_0}\ge 1
+\end{cases}
+$$
+可以看出$x_0$为刻度参数，从而无信息先验为$\pi(x_0)=\frac{1}{x_0}$
+
+## 2.13题
+### (1)
+\textbf{解:}
+泊松分布$P(\lambda)$的密度函数$f(x,\lambda)=\frac{\lambda^x}{x!}e^{-\lambda}$使用Jeffreys方法
+写出对数似然函数
+
+$$
+\begin{aligned}
+l(\lambda|x)&=ln[f(x|\lambda)]\\
+&=-\lambda+xln\lambda-ln(x!)
+\end{aligned}
+$$
+求二阶导
+$\frac{\partial^2l}{\partial \lambda^2}=-\frac{x}{\lambda^2}$\par 
+求费希尔信息量
+$$I(\lambda)=E_{X|\lambda}(\frac{X}{\lambda^2})=\frac{\lambda}{\lambda^2}=\frac{1}{\lambda}$$
+从而Jeffrey先验为$\pi(\lambda)=\sqrt{\frac{1}{\lambda}}$这是一个广义先验分布
+
+###  (2)
+\textbf{解:}负二项分布$Nb(r,\theta)$的密度函数$f(x,\theta)=\tbinom{x-1}{r-1}\theta^r(1-\theta)^{x-r}$
+则对数似然函数为
+
+$$
+\begin{aligned}
+l(\theta|x)&=ln[f(x|\theta)]\\
+&=ln{\tbinom{x-1}{r-1}}+rln\theta+(x-r)ln(1-\theta)
+\end{aligned}
+$$
+求二阶导
+$\frac{\partial^2l}{\partial \theta^2}=-\frac{r}{\theta^2}-\frac{x-r}{(1-\theta)^2}$
+\par 
+求费希尔信息量
+$$
+\begin{aligned}
+I(\theta)&=E_{X|\theta}(\frac{r}{\theta^2}+\frac{x-r}{(1-\theta)^2})\\
+&=\frac{r}{\theta^2}+\frac{\frac{r}{\theta}-r}{(1-\theta)^2}\\
+&=\frac{r}{\theta^2(1-\theta)}
+\end{aligned}
+$$
+
+$\theta$的先验分布$\pi(\theta) \propto \frac{1}{\theta(1-\theta)^{\frac{1}{2}}}(0<\theta < 1)$
+
+###  (3)
+\textbf{解:}指数分布$Exp(\frac{1}{\lambda})$的密度函数$f(x,\lambda)=\frac{1}{\lambda}e^{-\frac{x}{\lambda}}$
+从而对数似然函数为
+
+$$
+\begin{aligned}
+l(\lambda|x)&=ln[f(x|\lambda)]\\
+&=-ln\lambda-\frac{x}{\lambda}
+\end{aligned}
+$$
+
+求二阶导
+$\frac{\partial^2l}{\partial \lambda^2}=\frac{1}{\lambda^2}-2\frac{x}{\lambda^3}$
+\par 
+求费希尔信息量
+$$
+\begin{aligned}
+I(\lambda)&=E_{X|\lambda}(-\frac{1}{\lambda^2}+2\frac{x}{\lambda^3})\\
+&=-\frac{1}{\lambda^2}+2\frac{\lambda}{\lambda^3}\\
+&=\frac{1}{\lambda^2}
+\end{aligned}
+$$
+ 从而$\lambda$的 先验分布为$\pi(\lambda)=\frac{1}{\lambda},\lambda>0$这是一个广义先验
+
+### (4)
+\textbf{解:}伽马分布$\Gamma(\alpha,\lambda)$密度函数为$f(x|\lambda)=\frac{\lambda^{\alpha}}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x}$
+对数似然为
+$$
+\begin{aligned}
+l(\lambda|x)&=ln[f(x|\lambda)]\\
+&=\alpha ln\lambda-\lambda x-ln(\Gamma(\alpha))+(\alpha-1)lnx
+\end{aligned}
+$$
+求二阶导为
+$\frac{\partial^2l}{\partial \lambda^2}=-\frac{\alpha}{\lambda^2}$
+从而
+$$
+\begin{aligned}
+I(\lambda)&=E_{X|\lambda}(\frac{\alpha}{\lambda^2})\\
+&=\frac{\alpha}{\lambda^2}
+\end{aligned}
+$$
+从而$\lambda$的 先验分布为$\pi(\lambda)=\frac{1}{\lambda},\lambda>0$这是一个广义先验
+
+### (5)
+\textbf{解:}多项分布$M(n,p)$密度函数为$f(x|p)=\frac{n!}{x_1!...x_k!}p_1^{x_1}...p_k^{x_k}$
+其中$\sum_{i=1}^kx_i=n,\sum_{i=1}^kp_k=1$
+对数似然函数为
+$$
+\begin{aligned}
+l(p|x)&=ln[f(x|p)]\\
+&=\sum_{i=1}^{k-1}x_ilnp_i+x_kln(1-\sum_{i=1}^{k-1}p_i)+ln(\frac{n!}{x_1!...x_k!})
+\end{aligned}
+$$
+对每个i,j求偏导导结果为
+
+$$
+\frac{\partial^2l}{\partial p_i \partial p_j}=\begin{cases}
+-\frac{x_k}{p_k^2}&i\neq j\\
+-\frac{x_i}{p_i^2}-\frac{x_k}{p_k^2}&i=j
+\end{cases}
+$$
+从而有
+$$
+I_{ij}(p)=\begin{cases}
+&\frac{n}{p_i}+\frac{n}{p_k},i=j\\
+&\frac{n}{p_k},i \neq j
+\end{cases}
+$$
+其中i,j在1,...k-1中取值
+算得
+$det(I)=n^{k-1}\prod_{i=1}^{k}\frac{1}{p_i}$
+从而p的先验分布密度为$\pi(p)\propto \sqrt{\prod_{i=1}^{k}\frac{1}{p_i}}$
+为迪利克雷分布$D(\frac{1}{2},...,\frac{1}{2})$这里有k项。
+
+## 2.20题
+\textbf{证明:}
+考虑先验分布取$h(\theta)$的后验分布
+$$
+\begin{aligned}
+\pi(\theta|x)&\propto h(\theta)f(x|\theta)\\
+&\propto Ae^{k_1a(\theta)+k_2c(\theta)}e^{a(\theta)b(x)+c(\theta)+d(x)}\\
+&\propto e^{(k_1+b(x))a(\theta)+(k_2+1)c(\theta)+d(x)}
+\end{aligned}
+$$
+其中$k_1+b(x),d(x)$为x的函数$a(\theta),(k_2+1)c(\theta)$是$\theta$的函数，其后验仍在原来的分布族中，从而$h(\theta)$为$\theta$的共轭先验分布。
+
+## 2.24题
+\textbf{证明:}考虑分成两段,
+在$a<\theta<z$上,令$g_1(\theta)=1$,有$E^{\pi}(g_1(\theta))=\frac{1}{2}$
+从而
+$$
+\begin{aligned}
+\tilde \pi(\theta)&=\frac{\pi_0(\theta)e^{\lambda_1g_1(\theta)}}{\int_{\Theta}\pi_0(\theta)e^{\lambda_1g_1(\theta)}d\theta}\\
+&=\frac{\frac{1}{\theta}e^{\lambda_1}}{\int_{\Theta}\frac{1}{\theta}e^{\lambda_1}d\theta}\\
+&=a_1\frac{\frac{1}{\theta}}{\int_a^z\frac{1}{\theta}d\theta}\\
+&=a_1\frac{1}{\theta}ln(\frac{z}{a})^{-1}
+\end{aligned}
+$$
+其中$a_1$需要满足
+$$\int_a^za_1\frac{1}{\theta}ln(\frac{z}{a})^{-1}d\theta=\frac{1}{2}$$
+从而$a_1=\frac{1}{2}$
+从而$a<\theta<z$时,最大熵先验为$\pi(\theta)=\frac{1}{\theta}(2ln\frac{z}{a})^{-1}$
+同理考虑$z<\theta<b$
+在其上令$g_2(\theta)=1$,有$E^{\pi}(g_2(\theta))=\frac{1}{2}$
+相同的步骤得到$z<\theta<b$时，最大熵先验为$\pi(\theta)=\frac{1}{\theta}(2ln\frac{b}{z})^{-1}$
+综上
+
+$$
+\pi(\theta)=\begin{cases}
+\frac{1}{\theta}(2ln\frac{z}{a})^{-1}&0<a<\theta<z\\
+\frac{1}{\theta}(2ln\frac{b}{z})^{-1}&z<\theta<b
+\end{cases}
+$$
+
+## 2.25题
+
+\textbf{证明:}
+由$\varphi_1=\frac{\mu_2}{\mu_1},\varphi_2=\mu_1\mu_2$
+解出
+$\mu_1=\sqrt{\frac{\varphi_2}{\varphi_1}},\mu2=\sqrt{\varphi_1\varphi_2}$
+变换的雅各比矩阵为
+$$
+\frac{\partial (\varphi_1,\varphi_2)}{\partial (\mu_1,\mu_2)}=\begin{pmatrix}
+-\frac{1}{2}\varphi_1^{-\frac{3}{2}}\varphi_2^{\frac{1}{2}}&\frac{1}{2}\varphi_1^{-\frac{1}{2}}\varphi_2^{-\frac{1}{2}}\\
+\frac{1}{2}\varphi_1^{-\frac{1}{2}}\varphi_2^{\frac{1}{2}}&\frac{1}{2}\varphi_1^{\frac{1}{2}}\varphi_2^{-\frac{1}{2}}
+\end{pmatrix}
+$$
+从而对数似然
+$$
+\begin{aligned}
+l(\varphi_1,\varphi_2|x)&=ln(f(\varphi_1,\varphi_2|x)|det(\frac{\partial (\varphi_1,\varphi_2)}{\partial (\mu_1,\mu_2)})|)\\
+&=-ln\mu_1\mu_2-\frac{x_1}{\mu_1}-\frac{x_2}{\mu_2}+ln(\frac{1}{2}\varphi_1^{-1})\\
+&=-ln\varphi_1-ln\varphi_2-\frac{x_1}{\sqrt{\frac{\varphi_2}{\varphi_1}}}-\frac{x_2}{\sqrt{\varphi_1\varphi_2}}-ln2
+\end{aligned}
+$$
+
+$\varphi_2$为多余参数,求偏导得到
+$$\frac{\partial^2l }{\partial \varphi_1^2}=\varphi_1^{-2}+\frac{1}{4}x_1\varphi_1^{-\frac{3}{2}}\varphi_2^{-\frac{1}{2}}-\frac{3}{4}x_2\varphi_1^{-\frac{5}{2}}\varphi_2^{-\frac{1}{2}}$$
+
+$$\frac{\partial^2l }{\partial \varphi_2^2}=\varphi_2^{-2}-\frac{3}{4}(x_1\varphi_1^{\frac{1}{2}}+x_2\varphi_1^{-\frac{1}{2}})\varphi_2^{-\frac{5}{2}}$$
+$$\frac{\partial^2l }{\partial \varphi_2\partial \varphi_1}=\frac{1}{4}(x_1\varphi_1^{-\frac{1}{2}}-x_2\varphi_1^{-\frac{3}{2}})\varphi_2^{-\frac{5}{2}}$$
+所以
+$$E^{X|\varphi}(-\frac{\partial^2l }{\partial \varphi_2^2})=\frac{1}{2}\varphi_2^{-2}$$
+$$E^{X|\varphi}(-\frac{\partial^2l }{\partial \varphi_1^2})=-\frac{1}{2}\varphi_1^{-2}$$
+$$E^{X|\varphi}(-\frac{\partial^2l }{\partial \varphi_2\partial \varphi_1})=0$$
+可得到费希尔信息阵是对角阵
+$$
+I(\varphi_1,\varphi_2)=\begin{pmatrix}
+-\frac{1}{2}\varphi_1^{-2}&0\\
+0&\frac{1}{2}\varphi_2^{-2}
+\end{pmatrix}
+$$
+从而可以得到条件reference先验为$\pi(\varphi_2|\varphi_1)\propto \sqrt{\varphi_2^{-2}}=\varphi_2^{-1}$
+这是一个广义先验\par 
+选择参数空间$\Phi=R_+\times R_+$上的单调增子集$\Omega_i=L_i \times S_i$则$\Omega_{i,\varphi_1}=L_I=[l_{i1},l_{i2}]$
+$$
+K_i(\varphi_1)=\frac{1}{\int_{\Omega_{i,\varphi_1}}\pi(\varphi_2|\varphi_1)d\varphi_2}=\frac{1}{lnl_{i2}-lnl_{i1}}
+$$
+
+$$
+\pi_i(\varphi_2|\varphi_1)=K_i(\varphi_1)\pi(\varphi_2|\varphi_1)I_{[l_{i1},l_{i2}]}=\frac{1}{(lnl_{i2}-lnl_{i1})\varphi_2}
+$$
+求边缘reference先验
+$$
+\begin{aligned}
+\pi_i(\varphi_1)&=exp(\frac{1}{2}\int_{\Omega_i,\varphi_1}\pi_i(\varphi_2|\varphi_1)ln\frac{|I(\varphi_1,\varphi_2)|}{|I_{22}(\varphi_1,\varphi_2)|}d\varphi_2)\\
+&=exp(\frac{1}{2}\int_{\Omega_i,\varphi_1}\frac{1}{(lnl_{i2}-lnl_{i1})\varphi_2}ln\frac{1}{2}\varphi_1^{-2}d\varphi_2)\\
+&=A\varphi_1^{-1}
+\end{aligned}
+$$
+其中A为常数,下面取$\varphi_{10}=1$,求极限
+可得
+$$
+\begin{aligned}
+\pi(\varphi_1,\varphi_2)&=\lim_{i\rightarrow \infty}\frac{K_i(\varphi_1)\pi_i(\varphi_1)}{K_i(\varphi_{10})\pi_i(\varphi_{10})}\pi(\varphi_2,\varphi_1)\\
+&=\lim_{i\rightarrow \infty}\frac{\frac{1}{lnl_{i2}-lnl_{i1}}A\varphi_1^{-1}}{\frac{1}{lnl_{i2}-lnl_{i1}}A}\varphi_2^{-1}\\
+&=(\varphi_1\varphi_2)^{-1}
+\end{aligned}
+$$
+从而我们得到参数$(\varphi_1,\varphi_2)$的reference先验为$\pi(\varphi_1,\varphi_2)=(\varphi_1\varphi_2)^{-1}$
+
+

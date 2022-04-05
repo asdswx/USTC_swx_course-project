@@ -1,0 +1,4 @@
+"0","x<-read.table(""5-12.DAT"")"
+"2","无法打开文件'5-12.DAT': No such file or directory"
+"2","Error in file(file, ""rt"") : 鏃犳硶鎵撳紑閾剧粨
+"

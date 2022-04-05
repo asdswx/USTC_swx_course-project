@@ -1,0 +1,2 @@
+"0","x=read.table(""T1-11.dat"")"
+"0","plot(x[,1],x[,2],xlab=""Size"",ylab=""Visitors"")"

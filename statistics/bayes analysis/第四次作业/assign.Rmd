@@ -1,0 +1,215 @@
+---
+title: "第四次作业"
+documentclass: ctexart
+author: PB18000029 舒文炫
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: no
+    toc: yes
+classoption: "hyperref"
+---
+
+ 
+ 
+## 3.13题
+
+### (1)
+
+\textbf{解:}缺陷数服从泊松分布$f(x|\lambda)=\frac{\lambda^x}{x!}e^{-\lambda}$
+如果$\lambda$的先验服从$\Gamma(3,1)$,也即密度函数为
+$$\pi(\lambda)=\frac{1}{\Gamma(3)}\lambda^2e^{-\lambda}$$
+从而后验分布为
+$$
+\begin{aligned}
+\pi(\lambda|X)&\propto \pi(\lambda)f(X|\lambda)\\
+&\propto \pi(\lambda)\prod_{i=1}^5f(x_i|\lambda)\\
+&\propto \frac{1}{\Gamma(3)}\lambda^2e^{-\lambda}\prod_{i=1}^5\frac{\lambda^{x_i}}{x_i!}e^{-\lambda}\\
+&\propto \lambda^{2+\sum_{i=1}^5x_i}e^{-6\lambda}
+\end{aligned}
+$$
+代入数据得到，$\lambda$的后验分布为$\Gamma(16,6)$
+
+### (2)
+\textbf{解:}
+泊松分布参数的Jeffreys先验为$\pi(\lambda)=\lambda^{-\frac{1}{2}}$，这在习题2.13已经算过，故不再赘述过程,从而后验分布为
+$$
+\begin{aligned}
+\pi(\lambda|X)&\propto \pi(\lambda)f(X|\lambda)\\
+&\propto \pi(\lambda)\prod_{i=1}^5f(x_i|\lambda)\\
+&\propto \lambda^{-\frac{1}{2}}\prod_{i=1}^5\frac{\lambda^{x_i}}{x_i!}e^{-\lambda}\\
+&\propto \lambda^{-\frac{1}{2}+\sum_{i=1}^5x_i}e^{-5\lambda}
+\end{aligned}
+$$
+从而代入数据得到$\lambda$的后验分布为$\Gamma(13.5,5)$
+
+## 3.16题
+
+### (1)
+\textbf{解:}
+假设先验分布为$\Gamma(r,\alpha)$,由题，其均值为0.0002，标准差为0.0001
+从而我们有
+$$
+\begin{aligned}
+\frac{r}{\alpha}=0.0002\\
+\sqrt{\frac{r}{\alpha^2}}=0.0001
+\end{aligned}
+$$
+解得
+$$
+\begin{aligned}
+r&=4\\
+\alpha&=20000
+\end{aligned}
+$$
+所以先验分布为$\Gamma(4,20000)$
+
+### (2)
+\textbf{解:}
+对指数函数，密度函数为$p(x|\lambda)=\lambda e^{-\lambda x},x>0$
+先验分布如(1)所求，从而后验分布为
+$$
+\begin{aligned}
+\pi(\lambda|X)&\propto \pi(\lambda) p(X|\lambda)\\
+&\propto \pi(\lambda)\prod_{i=1}^np(x_i|\lambda)\\
+&\propto \frac{20000^4}{\Gamma(4)}\lambda^3e^{-20000\lambda}\prod_{i=1}^n\lambda e^{-\lambda x_i}\\
+&\propto \lambda^{3+n}e^{-20000-\sum_{i=1}^nx_i}
+\end{aligned}
+$$
+从而后验分布为$\Gamma(4+n,20000+\sum_{i=1}^nx_i)$
+
+## 3.21题
+
+### (1)
+\textbf{证明:}
+$(\theta,\sigma^2)$的先验密度$\pi(\theta,\sigma^2)=\pi_1(\theta|\sigma^2)\pi_2(\sigma^2)$,$\pi(\theta,\sigma^2)$为$N(\mu,\sigma^2/k)$的密度,$\pi_2(\sigma^2)=\sigma^{-2}I_{(0,\infty)}(\sigma^2)$
+X是从正态分布总体$N(\theta,\sigma^2)$抽取的i.i.d.样本,密度函数为
+$f(x|\theta,\sigma^2)=\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x-\theta)^2}{2\sigma^2}}$
+
+从而后验分布为
+$$
+\begin{aligned}
+pi(\theta,\alpha^2|x)&=f(x|\theta,\sigma^2)\pi(\theta,\alpha^2)\\
+&=f(x|\theta,\sigma^2)\pi_1(\theta|\sigma^2)\pi_2(\sigma^2)\\
+&=\prod_{i=1}^m\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x_i-\theta)^2}{2\sigma^2}}\frac{1}{\sqrt{2\pi\sigma^2/k}}e^{-\frac{(\theta-\mu)^2}{2\sigma^2/k}}\sigma^{-2}I_{(0,\infty)}(\sigma^2)\\
+&\propto e^{-\frac{m\theta^2-2m\bar x\theta+\sum_{i=1}^mx_i^2+k\theta^2-2k\mu \theta+k\mu^2}{2\sigma^2}}(\sigma^2)^{-1-(m+1)/2}\\
+&\propto \frac{1}{\sqrt{2\pi\sigma^2/(m+k)}}e^{-\frac{(\theta-\frac{m\bar x+k\mu}{m+k})^2}{2\sigma^2/(m+k)}} (\sigma^2)^{-1-m/2} e^{-\frac{\sum_{i=1}^mx_i^2+k\mu^2-(\frac{m\bar x+k\mu}{m+k})^2(k+m)}{2\sigma^2}}
+\end{aligned}
+$$
+其中
+$$\sum_{i=1}^mx_i^2+k\mu^2-(\frac{m\bar x+k\mu}{m+k})^2(k+m)=\sum_{i=1}^m(x_i-\bar x)^2+mk(\bar x-\mu^2)/(m+k)$$
+从而我们得到了可以将后验密度表示为
+$$\pi(\theta,\sigma^2|x)=\pi_1(\theta|\sigma^2,x)\pi_2(\sigma^2|x)$$
+其中$\pi_1(\theta|\sigma^2,x)$为正态分布$N(\frac{m\bar x+k\mu}{m+k},\sigma^2/(m+k))$
+$\pi_2(\sigma^2|x)$为逆伽马分布$\Gamma^{-1}(m/2,B_m/2)$,
+$B_m=\sum_{i=1}^m(x_i-\bar x)^2+mk(\bar x-\mu^2)/(m+k)$
+
+### (2)
+\textbf{证明:}
+求$\sigma^2$的边缘分布，即将后验密度对$\theta$积分
+$$
+\begin{aligned}
+\pi(\sigma^2|x)&=\int_{-\infty}^{\infty}\pi(\theta,\sigma^2|x)d\theta\\
+&=\int_{-\infty}^{\infty}\pi_1(\theta|\sigma^2,x)\pi_2(\sigma^2|x)d\theta\\
+&=\pi_2(\sigma^2|x)\int_{-\infty}^{\infty}\pi_1(\theta|\sigma^2,x)d\theta\\
+&=\pi_2(\sigma^2|x)
+\end{aligned}
+$$
+
+从而由(1)知$\sigma^2$的边缘密度$\pi(\sigma^2|x)$为逆伽马分布$\Gamma^{-1}(m/2,B_m/2)$
+
+### (3)
+\textbf{证明:}
+要证明$\theta$的边缘后验密度，将后验密度对$\sigma^2$积分，可以得到
+$$
+\begin{aligned}
+\pi(\sigma^2|x)&=\int_0^{\infty}\pi(\theta,\sigma^2|x)d\sigma^2\\
+&=\int_0^{\infty}\pi_1(\theta|\sigma^2,x)\pi_2(\sigma^2|x)d\sigma^2\\
+&\propto \int_{-\infty}^{\infty}\frac{1}{\sqrt{2\pi\sigma^2/(m+k)}}e^{-\frac{(\theta-\frac{m\bar x+k\mu}{m+k})^2}{2\sigma^2/(m+k)}} (\sigma^2)^{-1-m/2} e^{-\frac{\sum_{i=1}^mx_i^2+k\mu^2-(\frac{m\bar x+k\mu}{m+k})^2(k+m)}{2\sigma^2}}d\sigma^2\\
+\end{aligned}
+$$
+到这里，我们可以注意到如果将$\theta$视为常数，这里积分的核就是逆伽马分布$\Gamma^{-1}((m+1)/2,((\theta-\frac{m\bar x+k\mu}{m+k})^2(m+k)/2+B_m/2)$
+那么积分可以得到这个核前面系数的倒数，也就是
+$$
+\begin{aligned}
+\pi(\theta|x) &\propto ((\theta-\frac{m\bar x+k\mu}{m+k})^2(m+k)/2+B_m/2)^{-(m+1)/2}\\
+&\propto (1+\frac{1}{m}(\frac{\theta-\frac{m\bar x+k\mu}{m+k}}{\sqrt{\frac{B_m}{m(m+k)}}})^2)^{-(m+1)/2}
+\end{aligned}
+$$
+从而我们得到了
+$\theta$的边缘分布为广义一元t分布
+$\mathscr{T}(m,\frac{m\bar x+k\mu}{m+k},\frac{B_m}{m(m+k)})$即为所求
+
+## 3.23题
+
+### (1)
+\textbf{证明:}
+$(\theta,\sigma^2)$的先验密度$\pi(\theta,\sigma^2)=\pi_1(\theta|\sigma^2)\pi_2(\sigma^2)$,$\pi(\theta,\sigma^2)$为$N(\mu,\tau\sigma^2)$的密度,$\pi_2(\sigma^2)$为逆伽马分布$\Gamma^{-1}(\alpha,\beta)$的密度即为
+$$\pi_2(\sigma^2)=\frac{\beta^{\alpha}}{\Gamma(\alpha)}(\sigma^2)^{-(\alpha+1)}e^{-\frac{\beta}{\sigma^2}}$$
+X是从正态分布总体$N(\theta,\sigma^2)$抽取的i.i.d.样本,密度函数为
+$f(x|\theta,\sigma^2)=\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x-\theta)^2}{2\sigma^2}}$
+
+从而后验分布为
+$$
+\begin{aligned}
+pi(\theta,\alpha^2|x)&=f(x|\theta,\sigma^2)\pi(\theta,\alpha^2)\\
+&=f(x|\theta,\sigma^2)\pi_1(\theta|\sigma^2)\pi_2(\sigma^2)\\
+&=\prod_{i=1}^n\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x_i-\theta)^2}{2\sigma^2}}\frac{1}{\sqrt{2\pi\tau\sigma^2}}e^{-\frac{(\theta-\mu)^2}{2\tau\sigma^2}}\frac{\beta^{\alpha}}{\Gamma(\alpha)}(\sigma^2)^{-(\alpha+1)}e^{-\frac{\beta}{\sigma^2}}\\
+&\propto e^{-\frac{\tau n\theta^2-2\tau n\bar x\theta+\tau\sum_{i=1}^nx_i^2+\theta^2-2\mu \theta+\mu^2+2\beta}{2\tau\sigma^2}}(\sigma^2)^{-(\alpha+1)-(n+1)/2}\\
+&\propto \frac{1}{\sqrt{2\pi\tau\sigma^2/(n\tau+1)}}e^{-\frac{(\theta-\frac{n\tau\bar x+\mu}{n\tau+1})^2}{2\tau\sigma^2/(n\tau+1)}} (\sigma^2)^{-(\alpha+1)-n/2} e^{-\frac{\tau\sum_{i=1}^mx_i^2+\mu^2-(\frac{n\tau\bar x+\mu}{n\tau+1})^2(n\tau+1)+2\beta}{2\tau\sigma^2}}
+\end{aligned}
+$$
+其中
+$$\tau\sum_{i=1}^mx_i^2+\mu^2-(\frac{n\tau\bar x+\mu}{n\tau+1})^2(n\tau+1)+2\beta=2\tau(\frac{1}{2}\sum_{i=1}^m(x_i-\bar x)^2+n(\bar x-\mu^2)/2(1+n\tau)+\beta)$$
+从而我们得到了可以将后验密度表示为
+$$\pi(\theta,\sigma^2|x)=\pi_1(\theta|\sigma^2,x)\pi_2(\sigma^2|x)$$
+其中$\pi_1(\theta|\sigma^2,x)$为正态分布$N(\frac{n\tau\bar x+\mu}{n\tau+1},\tau\sigma^2/(n\tau+1))$
+$\pi_2(\sigma^2|x)$为逆伽马分布$\Gamma^{-1}(\alpha+n/2,\bar\beta)$,
+$\bar\beta=\frac{1}{2}\sum_{i=1}^m(x_i-\bar x)^2+\frac{n(\bar x-\mu^2)}{2(1+n\tau)}+\beta$
+
+### (2)
+\textbf{证明:}
+求$\sigma^2$的边缘分布，即将后验密度对$\theta$积分
+$$
+\begin{aligned}
+\pi(\sigma^2|x)&=\int_{-\infty}^{\infty}\pi(\theta,\sigma^2|x)d\theta\\
+&=\int_{-\infty}^{\infty}\pi_1(\theta|\sigma^2,x)\pi_2(\sigma^2|x)d\theta\\
+&=\pi_2(\sigma^2|x)\int_{-\infty}^{\infty}\pi_1(\theta|\sigma^2,x)d\theta\\
+&=\pi_2(\sigma^2|x)
+\end{aligned}
+$$
+
+从而由(1)知$\sigma^2$的边缘密度$\pi(\sigma^2|x)$为逆伽马分布$\Gamma^{-1}(\alpha+n/2,\bar\beta)$
+
+### (3)
+\textbf{证明:}
+要证明$\theta$的边缘后验密度，将后验密度对$\sigma^2$积分，可以得到
+$$
+\begin{aligned}
+\pi(\sigma^2|x)&=\int_0^{\infty}\pi(\theta,\sigma^2|x)d\sigma^2\\
+&=\int_0^{\infty}\pi_1(\theta|\sigma^2,x)\pi_2(\sigma^2|x)d\sigma^2\\
+&\propto \int_{-\infty}^{\infty}\frac{1}{\sqrt{2\pi\tau\sigma^2/(n\tau+1)}}e^{-\frac{(\theta-\frac{n\tau\bar x+\mu}{n\tau+1})^2}{2\tau\sigma^2/(n\tau+1)}} (\sigma^2)^{-(\alpha+1)-n/2} e^{-\frac{\tau\sum_{i=1}^mx_i^2+\mu^2-(\frac{n\tau\bar x+\mu}{n\tau+1})^2(n\tau+1)+2\beta}{2\tau\sigma^2}}d\sigma^2\\
+\end{aligned}
+$$
+到这里，我们可以注意到如果将$\theta$视为常数，这里积分的核就是逆伽马分布$\Gamma^{-1}((n+1)/2+\alpha,(\frac{n\tau\bar x+\mu}{n\tau+1})^2(n\tau+1)/2\tau+\bar\beta)$
+那么积分可以得到这个核前面系数的倒数，也就是
+$$
+\begin{aligned}
+\pi(\theta|x) &\propto ((\theta-\frac{n\tau\bar x+\mu}{n\tau+1})^2(n\tau+1)/2\tau+\bar\beta)^{-(n+1)/2+\alpha}\\
+&\propto (1+\frac{1}{2\alpha+n}(\frac{\theta-\frac{n\tau\bar x+\mu}{n\tau+1}}{\sqrt{\frac{\tau\bar\beta}{(1+n\tau)(\alpha+n/2)}}})^2)^{-(n+1)/2+\alpha}
+\end{aligned}
+$$
+从而我们得到了
+$\sigma^2$的边缘分布为广义一元t分布
+$\mathscr{T}(2\alpha+n,\frac{n\tau\bar x+\mu}{n\tau+1},\frac{\tau\bar\beta}{(1+n\tau)(\alpha+n/2)})$即为所求
+
+
+
+
+
+
+
+
+ 
+
+

@@ -1,0 +1,25 @@
+---
+title: '1.16'
+author: "舒文炫"
+date: "2021/3/28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Code and results
+
+```{r echo=TRUE}
+x=read.table("T1-8.DAT")
+m=colMeans(x)
+sn=cov(x)*(length(x[,1])-1)/length(x[,1])
+r=cor(x)
+print(m)
+print(sn)
+print(r)
+
+```
+## interpret
+从相关系数矩阵可以看出，Dominaut radius 与radius相关性最好，Dominant humerus 与Humerus 相关性最好，Dominant ulna 与Dominaut radius 相关性最好，Ulna与radius相关性最好

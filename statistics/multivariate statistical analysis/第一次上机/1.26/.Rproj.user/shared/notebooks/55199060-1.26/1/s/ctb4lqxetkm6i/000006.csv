@@ -1,0 +1,6 @@
+"0","library(rgl)"
+"0","opar<-par(no.readonly=TRUE)"
+"0","par(mfrow=c(1,2))"
+"0","plot3d(x[,1],x[,6],x[,7],xlab=""breed"",ylab=""frame"",zlab=""bkfat"",col=""blue"",size=4)#graph for b"
+"0","plot3d(x[,1],x[,4],x[,8],xlab=""breed"",ylab=""ftffrbody"",zlab=""saleht"",col=""blue"",size=4)#graph for c"
+"0","par(opar)"

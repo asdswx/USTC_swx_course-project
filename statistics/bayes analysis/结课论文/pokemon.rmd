@@ -1,0 +1,320 @@
+---
+title: "pokemon"
+author: "舒文炫"
+date: "2021/12/27"
+output: pdf_document
+---
+数据读入与预处理,这里的方式是如果副属性缺失，那么副属性等于主属性,双蛋群的处理也是相同，这样的预处理方式是最符合宝可梦设计的\par 
+```{r }
+pokemon<-read.csv("pokemon_alopez247.csv",stringsAsFactors = TRUE)
+str(pokemon)
+summary(pokemon)
+
+```
+这里可以看到缺失值主要在副属性和第二蛋群，那么这两种属性，为简单起见就不考虑了.\par 
+看一下种族值分布
+```{r}
+selindex1<-c(5,6,7,8,9,10,11,20,21,22)
+seldata1<-pokemon[,selindex1]
+feanames<-c("total","HP","attack","defense","sp_atk","sp_def","speed","height","weight","catch_rate")
+opar<-par(no.readonly = TRUE)
+par(mfrow=c(2,5))
+for( i in c(1:10)){
+hist(seldata1[,i],prob=TRUE,xlab=feanames[i],main=paste("histogram of",feanames[i]))
+lines(density(seldata1[,i]),lwd=2)
+}
+par(opar)
+```
+```{r}
+library(mixtools)
+em <- normalmixEM(sqrt(pokemon[,5]), mu = c(0, 1), sigma = c(1, 1), sd.constr = c(1, 1))
+plot(em, whichplots = 2)
+```
+
+
+```{r}
+library(MVN)
+datanormt<-mvn(sqrt(seldata1), multivariatePlot = "qq")
+print(datanormt$multivariateNormality)
+```
+```{r}
+opar<-par(no.readonly = TRUE)
+par(mfrow=c(2,5))
+for(i in selindex1){
+qqnorm(pokemon[,i],xlab=feanames[i],main=paste("qqplot of",feanames[i]))
+qqline(pokemon[,i])
+}
+par(opar)
+```
+```{r}
+
+```
+
+
+```{r}
+library(car)
+library(moments)
+normaldata<-matrix(rep(0,times=7210),ncol=10)
+for(i in c(1:10)){
+b<-powerTransform(seldata1[,i])
+b$lambda
+qqnorm(seldata1[,i]^(b$lambda))
+qqline(seldata1[,i]^(b$lambda))
+hist(seldata1[,i]^(b$lambda),probability = TRUE)
+lines(density(seldata1[,i]^(b$lambda)),lwd=2)
+skewness(seldata1[,i]^(b$lambda))
+kurtosis(seldata1[,i]^(b$lambda))
+if(shapiro.test(seldata1[,i]^(b$lambda))$p.value>0.1){
+  normaldata[,i]=seldata1[,i]^(b$lambda)
+}
+    
+}
+```
+
+
+
+
+可以看到除了总种族值，身高，体重不服从高斯分布，其他的都基本服从\par 
+因子型数据的研究,\par 
+搭建一个贝叶斯网络,数据选出主属性，是否为神兽，颜色，是否有性别，是否能超进化，
+蛋群，身体形态,进行结构学习\par 
+
+
+```{r }
+library(bnlearn)
+library(Rgraphviz)
+selindex2<-c(3,4,13,14,15,17,18,19,23)
+seldata2<-pokemon[,selindex2]
+
+seldata2.bn<-hc(seldata2)
+graphviz.plot(seldata2.bn,layout="fdp")
+```
+这里只看到是否神兽，是否有性别，以及蛋群,形态有关系，下面就选择这些结点，进行参数学习\par 
+```{r }
+selindex3<-c(13,15,17,18,23)
+seldata3<-pokemon[,selindex3]
+seldata3.bn<-hc(seldata3)
+graphviz.plot(seldata3.bn,layout="fdp")
+seldata3.fit<-bn.fit(seldata3.bn,data=seldata3)
+print(seldata3.fit)
+```
+```{r}
+modelx<-bn.cv(seldata3,seldata3.bn,k=10)
+plot(modelx)
+loss(modelx)
+```
+```{r}
+library(infotheo)
+library(tidyverse)
+library(dplyr)
+
+##a3<-discretize(pokemon[,7],"equalwidth",5)
+a1<-kmeans(pokemon[,5],5)$cluster
+a2<-kmeans(pokemon[,6],5)$cluster
+a3<-kmeans(pokemon[,7],5)$cluster
+a4<-kmeans(pokemon[,8],5)$cluster
+a5<-kmeans(pokemon[,9],5)$cluster
+a6<-kmeans(pokemon[,10],5)$cluster
+a7<-kmeans(pokemon[,11],5)$cluster
+
+a<-cbind(a1,a2,a3,a4,a5,a6,a7)
+
+b1<-as.character(a[,1])
+b2<-as.character(a[,2])
+b3<-as.character(a[,3])
+b4<-as.character(a[,4])
+b5<-as.character(a[,5])
+b6<-as.character(a[,6])
+b7<-as.character(a[,7])
+b<-cbind(b1,b2,b3,b4,b5,b6,b7)
+b<-data.frame(b,stringsAsFactors = TRUE)
+names(b)<-c("total","HP","attack","defense","sp_atk","sp_def","speed")
+procdata<-cbind(b,pokemon[,c(13,15,17,18,19,23)])
+str(procdata)
+summary(procdata)
+procdata.bn<-hc(procdata)
+graphviz.plot(procdata.bn,layout="fdp")
+procdata.fit=bn.fit(procdata.bn,procdata)
+```
+```{r}
+modelx1<-bn.cv(procdata,procdata.bn,k=10)
+plot(modelx1)
+loss(modelx1)
+```
+
+
+
+Probability PCA:这里对种族值，身高，体重，捕获率进行分析，提取主成分,下面尝试EM算法
+```{r}
+ppca<-function(mu,predimension,posdimension,rawdata,steps){
+  set.seed(2)
+  sigma<-1
+  W<-matrix(rnorm(predimension*posdimension),nrow=predimension)
+  M<-t(W)%*%W+diag(posdimension)*sigma
+  invM<-solve(M)
+  covW<-t(W)%*%W
+##初始值
+##  likelyhood<-c(rep(0,times=steps))
+
+  sumEz<-matrix(rep(0,times=posdimension*predimension),nrow=predimension)
+  sumEzz<-matrix(rep(0,times=posdimension*posdimension),nrow=posdimension)
+for(k in c(1:steps)){
+  
+  for(i in c(1:721)){
+    Ez<-invM%*%t(W)%*%matrix(t(rawdata[i,])-mu,ncol=1)
+    Ezz<-sigma*invM+Ez%*%t(Ez)
+    sumEz<-sumEz+matrix(t(rawdata[i,])-mu,ncol=1)%*%t(Ez)
+    sumEzz<-sumEzz+Ezz
+##    likelyhood[k]<-likelyhood[k]-predimension/2*log(2*pi*sigma)-sum(diag(Ezz))/2-t(matrix(t(rawdata[i,])-mu,ncol=1))%*%(matrix(t(rawdata[i,])-mu,ncol=1))/2/sigma+t(Ez)%*%t(W)%*%matrix(t(rawdata[i,])-mu,ncol=1)/sigma-sum(diag(Ezz%*%covW))/2/sigma
+   
+  }
+  newW<-sumEz%*%solve(sumEzz)
+  covnewW<-t(newW)%*%newW
+  sumsigma<-0
+  for(i in c(1:721)){
+    sumsigma<-sumsigma+t(matrix(t(rawdata[i,])-mu,ncol=1))%*%matrix(t(rawdata[i,])-mu,ncol=1)-2*t(invM%*%t(W)%*%matrix(t(rawdata[i,])-mu,ncol=1))%*%t(newW)%*%matrix(t(rawdata[i,])-mu,ncol=1)+sum(diag((sigma*invM+Ez%*%t(Ez))%*%covnewW))
+  }
+  if(abs(sigma-sumsigma[1,1]/721/predimension)<0.000001){
+    break;
+  }
+  W<-newW
+  sigma<-sumsigma[1,1]/721/predimension
+  M<-t(W)%*%W+sigma*diag(posdimension)
+  invM<-solve(M)
+  covW<-t(W)%*%W
+}
+print(sigma)
+return(W)
+}
+```
+
+
+```{r}
+selindex4<-c(5:11,20:22)
+seldata4<-pokemon[,selindex4]
+useseldata<-matrix(rep(0,times=7210),nrow=721)
+for(i in c(1:10)){
+  for(j in c(1:721)){
+    useseldata[j,i]=(max(seldata4[,i])-seldata4[j,i])/(max(seldata4[,i])-min(seldata4[,i]))
+  }
+    
+}
+datacor<-cor(seldata4)
+mu<-colMeans(useseldata)
+posdimension<-3
+print(ppca(mu,10,posdimension,useseldata,1000))
+```
+使用最大对数似然算法
+```{r }
+S<-cov(useseldata)
+P<-eigen(S)
+print(P)
+U<-P$vectors[,1:3]
+sigma<-mean(P$values[4:10])
+print(sigma)
+L<-diag(3)
+L[1,1]<-sqrt(P$values[1]-sigma)
+L[2,2]<-sqrt(P$values[2]-sigma)
+L[3,3]<-sqrt(P$values[3]-sigma)
+W1<-U%*%L
+print(W1)
+```
+贝叶斯线性回归\par 
+可以发现捕获率和前面的很多特征都有较好的线性关系，这里我们使用贝叶斯方法进行回归,总的种族值和各项种族值就是简单的相加关系，所以这里不使用总种族值\par 
+```{r}
+library(corrplot)
+mat<-cor(pokemon[,selindex5])
+corrplot(mat,method="ellipse")
+```
+
+```{r}
+library(brms)
+set.seed(1)
+selindex5<-c(6,7,8,9,10,11,20,21,22)
+selindex6<-c(6,7,8,9,10,11,20,21)
+testindex<-sample(1:length(pokemon[,1]),size=100,replace = FALSE)
+testset<-pokemon[testindex,selindex6]
+trainset<-pokemon[-testindex,selindex6]
+traindata<-pokemon[-testindex,selindex5]
+```
+
+```{r}
+library(brms)
+fit1<-brm(Catch_Rate~HP+Attack+Defense+Sp_Atk+Sp_Def+Speed+Height_m+Weight_kg,data=traindata,chains=2,cores=2,iter=5000)
+summary(fit1)
+loo1<-loo(fit1)
+
+```
+```{r}
+b1<-matrix(c(312.10,-0.53,-0.50,-0.58,-0.54,-0.46,-0.47,-1.45,0.05),ncol=1)
+testx<-cbind(matrix(rep(1,times=100),ncol=1),as.matrix(testset))
+trainx<-cbind(matrix(rep(1,times=621),ncol=1),as.matrix(trainset))
+MSE.tst1<-mean((as.matrix(pokemon[testindex,22],ncol=1)-testx%*%b1)^2)
+MSE.tst1
+MSE.trn1<-mean((as.matrix(pokemon[-testindex,22],ncol=1)-trainx%*%b1)^2)
+MSE.trn1
+```
+```{r}
+
+fit2<-brm(Catch_Rate~HP+Attack+Defense+Sp_Atk+Sp_Def+Speed,data=traindata,chains=2,cores=2,iter=5000)
+summary(fit2)
+loo1<-loo(fit2)
+
+```
+```{r}
+selindex7<-c(6,7,8,9,10,11)
+
+b2<-matrix(c(307.01,-0.50,-0.47,-0.54,-0.53,-0.46,-0.48),ncol=1)
+testx2<-cbind(matrix(rep(1,times=100),ncol=1),as.matrix(pokemon[testindex,selindex7]))
+trainx2<-cbind(matrix(rep(1,times=621),ncol=1),as.matrix(pokemon[-testindex,selindex7]))
+MSE.tst2<-mean((as.matrix(pokemon[testindex,22],ncol=1)-testx2%*%b2)^2)
+MSE.tst2
+MSE.trn2<-mean((as.matrix(pokemon[-testindex,22],ncol=1)-trainx2%*%b2)^2)
+MSE.trn2
+qwq<-as.matrix(pokemon[testindex,22],ncol=1)
+qaq<-testx2%*%b2
+
+```
+某种意义上这并非一个很好的模型,考虑到实际上捕获率主要分为几个档位，可视为离散值，我们使用广义线性回归，将125作为一个阈值划分宝可梦的捕获率，这样就得到了下面的的0-1逻辑回归\par
+```{r}
+library(plyr)
+predata<-mutate(pokemon[,selindex5],
+                Catch_Rate=ifelse(Catch_Rate>125,0,1)
+               )
+str(predata)
+sum(predata[,9])/721
+```
+
+```{r}
+fit3<-brm(Catch_Rate~HP+Attack+Defense+Sp_Atk+Sp_Def+Speed,data=predata,chains=2,cores=2,iter=5000,family = bernoulli)
+```
+
+```{r}
+library(ggplot2)
+summary(fit3)
+
+stanplot(fit3, 
+         type = "trace")
+
+```
+```{r}
+library(dplyr)
+Pred <- predict(fit3, type = "response")
+Pred <- ifelse(Pred[,1] > 0.5, 1, 0)
+ConfusionMatrix <- table(Pred, pull(predata, Catch_Rate)) #`pull` results in a vector
+#correct classification rate
+sum(diag(ConfusionMatrix))/sum(ConfusionMatrix)
+```
+```{r}
+library(ROCR)
+# Compute AUC for predicting Class with the model
+Prob <- predict(fit3, type="response")
+Prob <- Prob[,1]
+Pred <- prediction(Prob, as.vector(pull(predata, Catch_Rate)))
+AUC <- performance(Pred, measure = "auc")
+AUC <- AUC@y.values[[1]]
+AUC
+```
+
+
+

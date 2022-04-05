@@ -1,0 +1,45 @@
+---
+title: "PB18000029_舒文炫"
+author: "舒文炫"
+date: "2021/4/10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 3.16(1)
+我们对Y关于X1,X2做最小二乘分析，残差图如下
+```{r }
+trees=read.table("3.16.dat",header = TRUE)
+fit=lm(y~x1+x2,data=trees)
+summary(fit)
+par(mfrow=c(2,2))
+plot(fit)
+```
+
+我们发现第一幅残差图的表现，残差与拟合值存在明显趋势，从而不服从正态分布，下面我们做boxcox变换。
+```{r trees}
+library(MASS)
+b<-boxcox(y~x1+x2,data=trees)
+lambda<-b$x
+likelihood<-b$y
+qwq<-cbind(lambda,likelihood)
+qwq[order(-likelihood),]
+```
+
+从图中可以看出lambda的极大似然估计为0.30.
+
+
+## 3.16(2)
+
+由上题我们得出lambda=0.30，现在我们将其带入，做变换得
+```{r}
+fit1=lm(y^0.3~x1+x2,data=trees)
+summary(fit1)
+par(mfrow=c(2,2))
+plot(fit1)
+```
+
+我们发现此时第一个残差图不呈现明显趋势，这说明残差近似符从正态分布

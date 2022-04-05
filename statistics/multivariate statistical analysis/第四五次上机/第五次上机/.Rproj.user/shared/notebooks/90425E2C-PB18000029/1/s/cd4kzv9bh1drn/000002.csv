@@ -1,0 +1,15 @@
+"0","library(car)"
+"2","程辑包‘car’是用R版本4.0.5 来建造的"
+"2","载入需要的程辑包：carData
+"
+"2","程辑包‘carData’是用R版本4.0.3 来建造的"
+"2","Registered S3 method overwritten by 'data.table':
+  method           from
+  print.data.table     
+"
+"0","library(plotrix)"
+"2","程辑包‘plotrix’是用R版本4.0.3 来建造的"
+"0","x=read.table(""5-12.DAT"")"
+"2","无法打开文件'5-12.DAT': No such file or directory"
+"2","Error in file(file, ""rt"") : 鏃犳硶鎵撳紑閾剧粨
+"

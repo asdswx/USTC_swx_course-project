@@ -1,0 +1,2 @@
+"0","x<-read.table(""T3-2.DAT"")"
+"0","plot(x,xlab=""duration"",ylab=""numbers of hours"")"

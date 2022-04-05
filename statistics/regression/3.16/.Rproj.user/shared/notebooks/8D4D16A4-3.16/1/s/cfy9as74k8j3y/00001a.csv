@@ -1,0 +1,2 @@
+"0","library(MASS)"
+"0","b <- boxcox(y~ x1+x2,data=trees)"

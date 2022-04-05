@@ -1,0 +1,218 @@
+---
+title: "PB18000029_舒文炫"
+author: "舒文炫"
+date: "2021/4/11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 4.28
+
+Q-Q图如下：
+
+```{r}
+x=read.table("T1-5.DAT")
+x<- as.numeric(unlist(x[,2]))
+b<-qqnorm(x)
+```
+
+
+下面我们求rQ:
+
+```{r b}
+x1<-b$x
+y1<-b$y
+r1=cor(x1,y1)
+r1
+```
+
+rQ=0.9693,n=40,对其进行正态性检验，显著水平0.05下，查表得临界值0.9726.小于临界值，从而我们拒绝正态性假设
+
+## 4.30
+### (a)
+
+
+我们调用MASS库，对x1做boxcox变换，求lambda的极大似然估计
+
+```{r}
+x1<- c(1,2,3,3,4,5,6,8,9,11)
+library(MASS)
+b<-boxcox(x1~1)
+x2<-b$x
+y2<-b$y
+lik<-cbind(x2,y2)
+lik<-lik[order(-y2),]
+lik
+```
+
+求得lambda的极大似然估计为0.3838，我们下面就这个lambda对x1回归,画出Q-Q图
+
+```{r x1}
+y=(x1^0.3838-1)/0.3838
+q<-qqnorm(y)
+x3<-q$x
+y3<-q$y
+r3=cor(x3,y3)
+r3
+```
+
+### (b)
+与(a)相同的步骤：
+```{r}
+x4<- c(18.95,19,17.95,15.54,14,12.95,8.94,7.49,6,3.99)
+library(MASS)
+b<-boxcox(x4~1)
+x5<-b$x
+y5<-b$y
+lik1<-cbind(x5,y5)
+lik1<-lik1[order(-y5),]
+lik1
+```
+
+lambda极大似然估计为0.9494，下面我们带入lambda
+
+```{r x4}
+z=(x4^0.9494-1)/0.9494
+q1=qqnorm(z)
+x6<-q1$x
+y6<-q1$y
+r6<-cor(x6,y6)
+r6
+```
+
+### (c)
+
+这里提一下，如果不用MASS库，也可以使用optim函数来求lambda的值，代码如下：
+
+对(a)
+
+```{r }
+ x1<- c(1,2,3,3,4,5,6,8,9,11)
+x4<- c(18.95,19,17.95,15.54,14,12.95,8.94,7.49,6,3.99)
+normal<-function(lambda){
+  u1<-lambda[1]
+  n=length(x1)
+ifelse(u1==0,i<-log(x1),i<-(x1^u1-1)/u1)
+i<-matrix(i,nrow=n,ncol=1)
+L=-n/2*log(det((n-1)*cov(i)/n))+(u1-1)*sum(log(x1))
+ return(-L)
+}
+result<-optim(par=c(0),normal)
+result
+```
+对(b)
+```{r }
+ x1<- c(1,2,3,3,4,5,6,8,9,11)
+x4<- c(18.95,19,17.95,15.54,14,12.95,8.94,7.49,6,3.99)
+normal<-function(lambda){
+  u1<-lambda[1]
+  n=length(x1)
+ifelse(u1==0,i<-log(x4),i<-(x4^u1-1)/u1)
+i<-matrix(i,nrow=n,ncol=1)
+L=-n/2*log(det((n-1)*cov(i)/n))+(u1-1)*sum(log(x4))
+ return(-L)
+}
+result<-optim(par=c(0),normal)
+result
+```
+
+
+
+
+同时考虑两个变量，求出的结果如下：
+
+```{r }
+ x1<- c(1,2,3,3,4,5,6,8,9,11)
+x4<- c(18.95,19,17.95,15.54,14,12.95,8.94,7.49,6,3.99)
+normal<-function(lambda){
+  u1<-lambda[1]
+  u2<-lambda[2]
+  n=length(x1)
+ifelse(u1==0,i1<-log(x1),i1<-(x1^u1-1)/u1)
+ifelse(u2==0,i2<-log(x4),i2<-(x4^u2-1)/u2)
+i=cbind(i1,i2)
+L=-n/2*log(det((n-1)*cov(i)/n))+(u1-1)*sum(log(x1))+(u2-1)*sum(log(x4))
+ return(-L)
+}
+result<-optim(par=c(1,1),normal)
+result
+```
+
+
+## 4.37
+
+先处理数据：
+```{r }
+x=read.table("T1-9.dat")
+m1=c(rep(100,times=length(x[,2])))/x[,2]
+m2=c(rep(200,times=length(x[,3])))/x[,3]
+m3=c(rep(400,times=length(x[,4])))/x[,4]
+m4=c(rep(800,times=length(x[,5])))/(x[,5]*60)
+m5=c(rep(1500,times=length(x[,6])))/(x[,6]*60)
+m6=c(rep(3000,times=length(x[,7])))/(x[,7]*60)
+m7=c(rep(42195,times=length(x[,8])))/(x[,8]*60)
+m=cbind(m1,m2,m3,m4,m5,m6,m7)
+
+##100m正态性检验
+b<-qqnorm(m1)
+x1<-b$x
+y1<-b$y
+r1<-cor(x1,y1)
+r1
+
+##200m正态性检验
+b<-qqnorm(m2)
+x1<-b$x
+y1<-b$y
+r2<-cor(x1,y1)
+r2
+
+##400m正态性检验
+b<-qqnorm(m3)
+x1<-b$x
+y1<-b$y
+r3<-cor(x1,y1)
+r3
+
+##800m正态性检验
+b<-qqnorm(m4)
+x1<-b$x
+y1<-b$y
+r4<-cor(x1,y1)
+r4
+
+##1500m正态性检验
+b<-qqnorm(m5)
+x1<-b$x
+y1<-b$y
+r5<-cor(x1,y1)
+r5
+
+##3000m正态性检验
+b<-qqnorm(m6)
+x1<-b$x
+y1<-b$y
+r6<-cor(x1,y1)
+r6
+
+##marathon正态性检验
+b<-qqnorm(m7)
+x1<-b$x
+y1<-b$y
+r7<-cor(x1,y1)
+r7
+
+##多元正态性检验
+xm=colMeans(m)
+xm<-matrix(rep(1,times=length(m[1,])*length(m[,1])),nrow=length(m[,1]),ncol=length(m[1,]))%*%diag(xm)
+d=(m-xm)%*%solve(cov(m))%*%t(m-xm)
+d<-diag(d)
+q<-qchisq(seq(1/108,107/108,1/54),7,ncp=0)
+d<-d[order(d)]
+plot(q,d)
+r8<-cor(d,q)
+r8
+```

@@ -1,0 +1,364 @@
+---
+title: "第七次作业"
+documentclass: ctexart
+author: PB18000029 舒文炫
+output:
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: no
+    toc: yes
+classoption: "hyperref"
+---
+
+ 
+ 
+## 6.4题
+
+### (1)
+
+\textbf{解:}
+柯西分布的密度函数为
+$$f(x|\mu,\lambda)=\frac{\lambda}{\pi[\lambda^2+(x-\mu)^2]}$$
+这里提议分布$N(X_t,\sigma^2)$是对称的，所以有
+$$\alpha(x_t,y)=min\Bigg\{1,\frac{f(y)}{f(x_t)}\Bigg\}=min\Bigg\{1,\frac{\lambda^2+(x_t-\mu)^2}{\lambda^2+(y-\mu)^2}\Bigg\}$$
+下面是随机游动Metroplis算法的R代码(基本和书上代码一样),并且给出代入标准差为0.05，0.5，2.5，16之后的拒绝概率和轨迹图
+```{r}
+set.seed(3)
+rwMetro<-function(lambda,mu,sigma,x0,N){
+  #lambda,mu为柯西分布的两个参数
+  #sigma为提议分布标准差
+  #x0为初始值
+  #N为链跑的次数
+  x<-numeric(N)##生成一个长为N的数组,且每个元素初始化为0
+  x[1]<-x0
+  u<-runif(N)##创建(0,1)均匀分布随机偏差，因为跑了N次，所以需要N个这样的偏差
+  k<-0##k为最终拒绝的个数
+  for(i in 2:N){##每次循环与接受概率比较，大就接受，小就舍去
+    y<-rnorm(1,x[i-1],sigma)
+      if(u[i]<=(lambda^2+(x[i-1]-mu)^2)/(lambda^2+(y-mu)^2))
+        x[i]<-y
+      else{
+        x[i]=x[i-1]
+        k=k+1
+      }
+  }
+  return(list(x=x,k=k))
+}
+#下面是代入数据部分
+lambda<-1
+mu<-0
+N<-2000
+sigma<-c(0.05,0.5,2.5,16)
+x0<-30
+cauchy1<-rwMetro(lambda,mu,sigma[1],x0,N)
+cauchy2<-rwMetro(lambda,mu,sigma[2],x0,N)
+cauchy3<-rwMetro(lambda,mu,sigma[3],x0,N)
+cauchy4<-rwMetro(lambda,mu,sigma[4],x0,N)
+#下面计算拒绝概率
+print(c(cauchy1$k,cauchy2$k,cauchy3$k,cauchy4$k)/N)
+```
+可以看到随着$\sigma$的增大,拒绝的概率也在增大，下面我给出四条链的轨迹图
+```{r cauchy1,cauchy2,cauchy3,cauchy4}
+sigma=c(0.05,0.5,2.5,16)
+par(mfrow=c(2,2))##方便比较四个图以2*2的形式排列
+refline<-qcauchy(c(0.025,0.975))##标准柯西分布的参考线
+cauchyline<-cbind(cauchy1$x,cauchy2$x,cauchy3$x,cauchy4$x)
+for(j in 1:4){
+  plot(cauchyline[,j],type="l",xlab=bquote(sigma==.(round(sigma[j],3))),ylab="X",ylim=range(cauchyline[,j]))
+  abline(h=refline)
+}
+par(mfrow=c(1,1))
+```
+可以看到$\sigma=0.05$时，链甚至还没有进入到分布的参考线内，此时离收敛还很远，
+$\sigma=0.5$时，可以收敛，但是很慢，$\sigma=2.5$时很快就进入了参考线内，可以认为收敛了，
+$\sigma=16$时接受概率小，虽然看出来收敛，但是效率低，而且这中间还有明显的毛刺，可以认为收敛性最好的是$\sigma=2.5$时的那条链，下面我们画QQ图和直方图
+```{r cauchy3}
+N=2000
+b<-201##丢弃掉前200个点
+y<-cauchy3$x[b:N]
+a<-ppoints(100)##100个分位点
+cauchyref<-qcauchy(a)##柯西分布分位点参考值
+mycauchy<-quantile(y,a)##我得到的链对应的分位点
+qqplot(cauchyref,mycauchy,xlab="quantile",ylab="sample quantile",xlim=c(-10,10))
+hist(y,breaks = "scott",xlab="sample",ylab="density",ylim=c(0,0.35),freq=FALSE)
+lines(cauchyref,dcauchy(cauchyref))
+
+
+```
+可以看到qq图近似一条直线，且直方图来看也是符合这个趋势的
+
+### (2)
+
+这里丢掉前1000个值，用列表表示分位数如下,一般比较分位数不会去找0和1对应的，我们会取0.05和0.95
+```{r cauchyline}
+N<-2000
+b<-1001##丢掉前1000个
+a<-c(0.05,seq(0.1,0.9,0.1),0.95)##各个十分位数
+cauchyref<-qcauchy(a)##参考十分位数
+discauchyline<-cauchyline[b:N,]##丢弃前1000个后的链
+mycauchy1<-quantile(discauchyline[,1],a)##我的分位数,每一列分别算出分位数然后拼接起来
+mycauchy2<-quantile(discauchyline[,2],a)
+mycauchy3<-quantile(discauchyline[,3],a)
+mycauchy4<-quantile(discauchyline[,4],a)
+mycauchy<-cbind(mycauchy1,mycauchy2)
+mycauchy<-cbind(mycauchy,mycauchy3)
+mycauchy<-cbind(mycauchy,mycauchy4)
+print(round(cbind(cauchyref,mycauchy),3))##结果保留三位小数打印出来
+```
+通过比较发现十分位数拟合最好的链是$\sigma=2.5$对应的那条链
+
+### (3)
+
+代码已经在前两题给出
+
+
+## 6.8题
+
+### (1)
+
+这里题目说要独立抽样，但是提议分布又和$X_t$有关，这很奇怪，这里我考虑把$X_t$换成$0.8\times5=4$,下面结果按这个来。此时$$\alpha(X_t,Y)=min\Bigg\{1,\frac{f(Y)g(X_t)}{f(X_t)g(Y)}\Bigg\}$$
+下面写出R代码
+```{r }
+indepmetro<-function(mu,sigma,m,p,samsigma,sammu){
+  # sigma,mu为提议正态分布的参数
+  # m为链的长度
+  # p,samsigma,sammu为要抽样的分布的参数
+  xt<-numeric(m)
+  u<-runif(m)
+  ##对提议分布抽样
+  y<-rnorm(m,mu,sigma)
+  k<-0
+  xt[1]=10
+  for(i in 2:m){
+    fy<-p*dnorm(y[i],sammu[1],samsigma[1])+(1-p)*dnorm(y[i],sammu[2],samsigma[2])
+    fx<-p*dnorm(xt[i-1],sammu[1],samsigma[1])+(1-p)*dnorm(xt[i-1],sammu[2],samsigma[2])
+    r<-fy/fx*dnorm(xt[i-1],mu,sigma)/dnorm(y[i],mu,sigma)
+    if(u[i]<=r)
+      xt[i]<-y[i]
+    else{
+      xt[i]<-xt[i-1]
+      k<-k+1
+      }
+    
+    }
+  
+  return(list(x=xt,k=k))
+}
+mu<-4
+sigma<-c(0.05,0.5,2,16)##这里我从小到大取了一些值
+m<-5000
+p<-0.2
+sammu<-c(0,5)
+samsigma<-c(1,1)
+hynorm<-numeric(4)
+for(i in 1:4){
+  hynorm[i]<-indepmetro(mu,sigma[i],m,p,sammu,samsigma)$k
+  print(hynorm[i]/m)
+}
+
+```
+这是取不同的标准差对应的拒绝率，下面就这4个标准差画图
+```{r}
+set.seed(1)
+mu<-4
+sigma<-c(0.05,0.5,2,16)
+m<-5000
+p<-0.2
+sammu<-c(0,5)
+samsigma<-c(1,1)
+hynorm1<-indepmetro(mu,sigma[1],m,p,sammu,samsigma)
+hynorm2<-indepmetro(mu,sigma[2],m,p,sammu,samsigma)
+hynorm3<-indepmetro(mu,sigma[3],m,p,sammu,samsigma)
+hynorm4<-indepmetro(mu,sigma[4],m,p,sammu,samsigma)
+hynorm<-cbind(hynorm1$x,hynorm2$x,hynorm3$x,hynorm4$x)
+par(mfrow=c(2,2))##方便比较四个图以2*2的形式排列
+for(j in 1:4){
+  plot(hynorm[,j],type="l",xlab=bquote(sigma==.(round(sigma[j],3))),ylab="X",ylim=range(hynorm[,j]))
+}
+par(mfrow=c(1,1))
+
+```
+从这个图看到，前面2个由于拒绝过多，基本没有收敛的意思，后面都可以收敛，这里可以看到收敛性最好的链是$\sigma=2$的时候，这里链的波动最小，这时对应的样本均值和方差计算如下,输出结果前面为均值,后面为方差
+```{r hynorm3}
+mean1=mean(hynorm3$x)
+var1=var(hynorm3$x)
+print(c(mean1,var1))
+```
+### (2)
+
+提议分布改为柯西分布，同理，不妨取提议分布为$C(4,\lambda)$
+计算的R代码如下
+```{r}
+cindepmetro<-function(mu,lambda,m,p,samsigma,sammu){
+  # lambda,mu为提议正态分布的参数
+  # m为链的长度
+  # p,samsigma,sammu为要抽样的分布的参数
+  xt<-numeric(m)
+  u<-runif(m)
+  ##对提议分布抽样
+  y<-rcauchy(m,mu,lambda)
+  k<-0
+  xt[1]=5
+  for(i in 2:m){
+    fy<-p*dnorm(y[i],sammu[1],samsigma[1])+(1-p)*dnorm(y[i],sammu[2],samsigma[2])
+    fx<-p*dnorm(xt[i-1],sammu[1],samsigma[1])+(1-p)*dnorm(xt[i-1],sammu[2],samsigma[2])
+    r<-fy/fx*dcauchy(xt[i-1],mu,lambda)/dcauchy(y[i],mu,lambda)
+    if(u[i]<=r)
+      xt[i]<-y[i]
+    else{
+      xt[i]<-xt[i-1]
+      k<-k+1
+      }
+    
+    }
+  
+  return(list(x=xt,k=k))
+}
+mu<-4
+lambda<-c(0.05,0.5,3,20)##这里我从小到大取了一些值
+m<-5000
+p<-0.2
+sammu<-c(0,5)
+samsigma<-c(1,1)
+chynorm<-numeric(4)
+##这一部分主要验证代码确实可以运行
+for(i in 1:4){
+  chynorm[i]<-cindepmetro(mu,lambda[i],m,p,sammu,samsigma)$k
+  print(chynorm[i]/m)
+}
+
+```
+同样的我们画图如下
+```{r}
+set.seed(1)
+mu<-4
+lambda<-c(0.05,0.5,3,20)
+m<-5000
+p<-0.2
+sammu<-c(0,5)
+samsigma<-c(1,1)
+chynorm1<-cindepmetro(mu,lambda[1],m,p,sammu,samsigma)
+chynorm2<-cindepmetro(mu,lambda[2],m,p,sammu,samsigma)
+chynorm3<-cindepmetro(mu,lambda[3],m,p,sammu,samsigma)
+chynorm4<-cindepmetro(mu,lambda[4],m,p,sammu,samsigma)
+chynorm<-cbind(chynorm1$x,chynorm2$x,chynorm3$x,chynorm4$x)
+par(mfrow=c(2,2))##方便比较四个图以2*2的形式排列
+for(j in 1:4){
+  plot(chynorm[,j],type="l",xlab=bquote(lambda==.(round(lambda[j],3))),ylab="X",ylim=range(chynorm[,j]))
+}
+par(mfrow=c(1,1))
+
+```
+这四种标准差对应的链都能收敛，不过当标准差较小时拒绝的比较多,而且很慢，$\sigma=3$时表现可以认为是其中最好的，这里可以看到链是最为平稳的，对应的样本均值和方差为
+```{r chynorm3}
+mean2=mean(chynorm3$x)
+var2=var(chynorm3$x)
+print(c(mean2,var2))
+```
+不过和第一小题比较一下，好像表现没有直接用正态当提议分布好。
+
+## 6.11题
+
+### (1)
+
+\textbf{证明:}
+由题我们得到$\pi(\theta_i|\lambda)=\lambda e^{-\lambda\theta_i}$,且其在给定了$\lambda$条件下独立
+$\pi(\lambda)=e^{-\lambda}$
+从而得到$\theta$规范先验
+$$
+\begin{aligned}
+\pi(\theta)&=\pi(\theta_1,...\theta_k)\\
+&=\int_0^{+\infty}(\prod_{i=1}^k\pi(\theta_i|\lambda))\pi(\lambda)d\lambda\\
+&=\int_0^{+\infty}\lambda^ke^{-\lambda(\sum_{i=1}^k\theta_i+1)}d\lambda\\
+&=(\sum_{i=1}^k\theta_i+1)^{-(k+1)}\int_0^{+\infty}\lambda^ke^{-\lambda}d\lambda\\
+&\propto (\sum_{i=1}^k\theta_i+1)^{-(k+1)}
+\end{aligned}
+$$
+从而我们得到$\pi(\theta)\propto (\sum_{i=1}^k\theta_i+1)^{-(k+1)}$
+
+### (2)
+
+#### (a)
+
+\textbf{证明：}
+$\theta_j|\theta_{-j},\lambda,x$的条件分布，这个是给定了x之后的后验分布，注意到给定$\lambda$后那些$\theta_i$是独立的，所以可以计算如下
+$$
+\begin{aligned}
+\pi(\theta_j|\theta_{-j},\lambda,x)&=\pi(\theta_j|\lambda,x_j)\\
+&\propto p(x_j|\theta_j,\lambda)\pi(\theta_j|\lambda)\\
+&\propto \frac{\theta_j^{x_j}}{x_j!}e^{-\theta_j}\lambda e^{-\lambda\theta_j}\\
+&\propto \theta_j^{x_j}e^{-(\lambda+1)\theta_j}
+\end{aligned}
+$$
+从而该全条件分布为$\Gamma(x_j+1,\lambda+1)$
+
+#### (b)
+
+\textbf{证明:}
+条件分布可计算如下:
+$$
+\begin{aligned}
+\pi(\lambda|\theta,x)&\propto[\prod_{i=1}^{k}\pi(x_i|\lambda,\theta_i)\pi(\theta_i|\lambda)]\pi(\lambda)\\
+&\propto [\prod_{i=1}^{k}\lambda e^{-\lambda \theta_i}]e^{-\lambda}\\
+&\propto \lambda^{k}e^{-(\sum_{i=1}^k\theta_i+1)\lambda}\\
+\end{aligned}
+$$
+从而我们得到了$\lambda|\theta,x$的全条件分布为$\Gamma(k+1,1+\sum_{i=1}^k\theta_i)$
+
+### (3)
+下面我们使用Gibbs抽样方法得到$(\theta,\lambda)$的随机数
+```{r}
+set.seed(1)##这里固定一组随机数，不然每次编译都会变，中位数和众数也会变
+N<-5000##链长度
+burn<-1000##预烧期
+k<-10
+X<-matrix(0,N,k+1)
+x<-c(3,1,4,2,5,3,2,2,0,4)
+#初值
+X[1,]<-c(rep(1,times=k+1))
+for(i in 2:N){
+  for(j in 1:k){
+    xt<-rgamma(1,x[j]+1,X[i-1,k+1]+1)
+    X[i,j]<-xt
+  }
+  lambdat<-rgamma(1,1+k,1+sum(X[i,1:k]))
+  X[i,k+1]<-lambdat
+}
+b<-burn+1
+Y<-X[b:N,]
+```
+下面我们分别画$\theta_1,\lambda$的轨迹图和直方图
+```{r }
+par(mfrow=c(1,2))
+plot(Y[,1],type='l',xlab = "times",ylab = "theta1")
+hist(Y[,1],main="histogram of theta1",breaks=c(seq(0,14,0.5)),xlab = "sample",ylab = "density",freq = FALSE)
+par(mfrow=c(1,1))
+```
+```{r }
+par(mfrow=c(1,2))
+plot(Y[,11],type='l',xlab = "times",ylab = "lambda")
+hist(Y[,11],main="histogram of lambda",breaks=c(seq(0,2,0.05)),xlab = "sample",ylab = "density",freq=FALSE)
+par(mfrow=c(1,1))
+```
+下面来看$\theta_1,\lambda$的后验中位数和后验众数
+```{r }
+thetafen<-quantile(Y[,1],0.5)
+lambdafen<-quantile(Y[,11],0.5)
+print(thetafen)##theta中位数
+print(lambdafen)##lambda中位数
+```
+ $\theta_1$后验中位数2.520,$\lambda$后验中位数为0.412
+从直方图可以很容易读出，$\theta_1$的后验众数为2.25,$\lambda$的后验众数为0.375\par 
+下面计算向量的后验期望，协方差阵和相关系数阵
+
+```{r }
+posmean=colMeans(Y)##样本均值来估计后验期望
+poscov=cov(Y)##样本协方差阵估计后验协方差阵
+poscor=cor(Y)##样本相关系数估计后验相关系数
+print(posmean)
+print(poscov)
+print(poscor)
+```
+
+### (4)
+代码已经在前面给出

@@ -1,0 +1,34 @@
+---
+title: '1.27'
+author: "舒文炫"
+date: "2021/3/28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## (a)
+
+```{r echo=TRUE}
+x=read.table("T1-11.dat")
+plot(x[,1],x[,2],xlab="Size",ylab="Visitors")
+r=cor(x)
+print(r)
+```
+## (b)
+
+由图可以发现Great Smoky 是异常点。去除该点。
+```{r echo=TRUE}
+x=read.table("T1-11.dat")
+newdata<-x[x[,1]!=521.8,]
+r1=cor(newdata)
+print(r1)
+```
+
+可以发现相关系数由0.17提高到了0.39，该离群点很大程度上使得样本相关性减弱了。
+
+## (c)
+
+不会改变，相关系数与所选单位无关。

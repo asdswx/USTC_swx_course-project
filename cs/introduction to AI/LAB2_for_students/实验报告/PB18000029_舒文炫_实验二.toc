@@ -1,0 +1,23 @@
+\contentsline {chapter}{\numberline {1}实验介绍}{2}%
+\contentsline {section}{\numberline {1.1}实验内容}{2}%
+\contentsline {section}{\numberline {1.2}实验环境}{2}%
+\contentsline {chapter}{\numberline {2}实验设计}{3}%
+\contentsline {section}{\numberline {2.1}part1:传统机器学习}{3}%
+\contentsline {section}{\numberline {2.2}part2:深度学习}{4}%
+\contentsline {chapter}{\numberline {3}实验实现}{5}%
+\contentsline {section}{\numberline {3.1}part1:传统机器学习}{5}%
+\contentsline {subsection}{\numberline {3.1.1}线性分类器}{5}%
+\contentsline {subsection}{\numberline {3.1.2}多分类朴素贝叶斯}{6}%
+\contentsline {subsection}{\numberline {3.1.3}SVM}{7}%
+\contentsline {section}{\numberline {3.2}part2:深度学习}{9}%
+\contentsline {subsection}{\numberline {3.2.1}MLP manual}{9}%
+\contentsline {subsection}{\numberline {3.2.2}MLPmixer}{12}%
+\contentsline {chapter}{\numberline {4}实验结果与分析}{14}%
+\contentsline {section}{\numberline {4.1}part1:传统机器学习}{14}%
+\contentsline {subsection}{\numberline {4.1.1}线性分类器}{14}%
+\contentsline {subsection}{\numberline {4.1.2}多分类朴素贝叶斯}{14}%
+\contentsline {subsection}{\numberline {4.1.3}SVM}{15}%
+\contentsline {section}{\numberline {4.2}part2:深度学习}{16}%
+\contentsline {subsection}{\numberline {4.2.1}MLP manual}{16}%
+\contentsline {subsection}{\numberline {4.2.2}MLPmixer}{17}%
+\contentsline {chapter}{\numberline {5}实验总结}{18}%

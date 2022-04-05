@@ -1,0 +1,74 @@
+---
+title: "PB18000029"
+author: "舒文炫"
+date: "2021/5/18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##5.20(a)
+```{r }
+library(car)
+library(plotrix)
+
+x=read.table("5-12.DAT")
+m=colMeans(x)
+s=cov(x)
+re=eigen(s)
+lam=re$val
+ve=re$vec
+print(ve)
+f1=2*44/43/45*qf(0.95,2,43)
+plot(x)
+draw.ellipse(m[1],m[2],sqrt(lam[2]*f1),sqrt(lam[1]*f1),angle=-atan(ve[1,1]/ve[2,1]),deg=FALSE)
+
+
+mx=c(190,275)
+me=m-mx
+t1=t(me)%*%solve(s/45)%*%me
+t1
+f1*45
+```
+检验发现在，从而对雌性来说是plausible的
+## (b)
+```{r }
+x=read.table("5-12.DAT")
+m=colMeans(x)
+s=cov(x)
+p=2
+n=45
+##simultaneous confidence intervals
+for(i in 1:2){
+  f1=sqrt(p*(n-1)/(n-p)*qf(0.95,p,n-p))
+  down=m[i]-f1*sqrt(s[i,i]/n)
+  up=m[i]+f1*sqrt(s[i,i]/n)
+  cat("the simultaneous  interval is [",down,",",up,"]\n")
+}
+for(i in 1:2){
+  t1=qt(0.9875,n-1)
+  down=m[i]-t1*sqrt(s[i,i]/n)
+  up=m[i]+t1*sqrt(s[i,i]/n)
+  cat("the bonferroni  interval is [",down,",",up,"]\n")
+}
+```
+simultaneous interval is larger than bonferroni interval
+## c
+```{r}
+x=read.table("5-12.DAT")
+for(i in 1:2){
+  b<-qqnorm(x[,i])
+  x1<-b$x
+  y1<-b$y
+  print(cor(x1,y1))
+  
+}
+plot(x)
+```
+
+## 5.22(a)
+```{r }
+
+```

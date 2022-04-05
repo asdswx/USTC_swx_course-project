@@ -1,0 +1,61 @@
+---
+title: '1.26'
+author: "舒文炫"
+date: "2021/3/28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R code (a)
+
+
+```{r echo=TRUE}
+x=read.table("T1-10.DAT")
+m=colMeans(x)
+print(m)
+sn=cov(x)*(length(x[,1])-1)/length(x[,1])
+print(sn)
+r=cor(x)
+print(r)
+```
+
+## interpret
+可以看出大体上，相关性都不是很好，不过yrhgt与frame和saleht相关性较好，至于品种，从相关系数矩阵可以看出，yrhgt与bkfat相关性最好，这两个变量或许可以区分不同品种
+
+## R code (b)
+
+```{r x,echo=TRUE}
+library(rgl)
+plot3d(x[,1],x[,6],x[,7],xlab="breed",ylab="frame",zlab="bkfat",col="blue",size=4)#可选择的三维图
+y=cbind(x[,1],x[,6],x[,7])
+breed=y[,1]
+frame=y[,2]
+bkfat=y[,3]
+pairs(~breed+frame+bkfat,data=y)#散点图矩阵
+```
+
+
+## interpret
+outliers:(1,8,0.35),(1,6,0.5)
+在(b)三维下，品种特征有很多重叠，区分不是很好
+
+
+
+## code for (c)
+```{r echo=TRUE}
+y=read.table("T1-10.DAT")
+library(rgl)
+plot3d(y[,1],y[,4],y[,8],xlab="breed",ylab="ftfrbody",zlab="saleht",col="blue",size=4)
+z=cbind(x[,1],x[,4],x[,8])
+breed=z[,1]
+ftfrbody=z[,2]
+saleht=z[,3]
+pairs(~breed+ftfrbody+saleht,data=z)
+```
+
+
+## interpret
+在(c)三维下，品种1，2，与3区别比较大

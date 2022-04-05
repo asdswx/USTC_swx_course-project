@@ -1,0 +1,41 @@
+---
+title: '1.26'
+author: "舒文炫"
+date: "2021/3/28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R code (a)
+
+
+```{r echo=TRUE}
+x=read.table("T1-10.DAT")
+m=colMeans(x)
+print(m)
+sn=cov(x)*(length(x[,1]-1))/length(x[,1])
+print(sn)
+r=cor(x)
+print(r)
+```
+
+## R code (b)&(c)
+
+```{r x,echo=TRUE}
+library(rgl)
+plot3d(x[,1],x[,6],x[,7],xlab="breed",ylab="frame",zlab="bkfat",col="blue",size=4)
+```
+## interpret
+outliers:(1,8,0.35),(1,6,0.5)
+在(b)三维下，品种特征有很多重叠，区分不是很好
+## code for (c)
+```{r echo=TRUE}
+y=read.table("T1-10.DAT")
+library(rgl)
+plot3d(y[,1],y[,4],y[,8],xlab="breed",ylab="ftffrbody",zlab="saleht",col="blue",size=4)
+```
+## interpret
+在(c)三维下，品种1，2，与3区别比较大

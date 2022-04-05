@@ -1,0 +1,16 @@
+---
+title: "pb18000029"
+author: "舒文炫"
+date: "2021/6/4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 6.20(a)
+```{r }
+x<-read.table("5-12.DAT")
+plot(x)
+```

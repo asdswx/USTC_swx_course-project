@@ -1,0 +1,27 @@
+---
+title: "第一周作业"
+author: "舒文炫"
+documentclass: ctexart
+output:
+  pdf_document:
+    toc: yes
+  rticles::ctex:
+    fig_caption: yes
+    number_sections: no
+    toc: yes
+classoption: hyperref
+---
+
+## 1.11题
+
+设T=T(X)是充分统计量，S(X)=G(T(X)),且函数S=G(T)是一对一的(即$T_1 \neq T_2 \implies G(T_1) \neq G(T_2)$),证明：S也是充分统计量。
+
+\textbf{证明}:
+因为T是充分统计量，由因子分解定理,对X的分布族\{$f(x,\theta),\theta \in \Theta$\},$\Theta$为参数空间，我们有$$f(x,\theta)=g(T(x),\theta)h(X)$$.
+要证S是充分统计量，根据因子分解定理，只需要将$f(x,\theta)$做类似分解即可。
+注意到,$S=G(T)$是一对一的，即存在函数$G^{-1}$,使得$G^{-1}(S)=T$,那么我们将此式代入上式
+即得$$f(x,\theta)=g(G^{-1}(S),\theta)h(x)$$,从而S是充分统计量。
+## 1.16题
+
+设$X_1,...,X_n$是从总体X中抽取的i.i.d样本，X的密度函数为$$f_{\theta}(x)=\frac{1}{2\theta}e^{-\frac{\abs(x)}{\theta} (-\infty<x<+\infty,\theta>0)$
+证明：$T=\sum_{i=1}^n\abs(X_i)$是$\theta的充分完全统计量$.
